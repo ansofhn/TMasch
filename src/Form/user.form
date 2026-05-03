@@ -31,11 +31,11 @@
                           <Group type="102" attributes="0">
                               <Component id="txtcari" min="-2" pref="71" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="bcari" min="-2" pref="53" max="-2" attributes="0"/>
+                              <Component id="bcari" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="367" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
@@ -178,7 +178,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="bsimpan">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Simpan"/>
+        <Property name="text" type="java.lang.String" value="Save"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bsimpanActionPerformed"/>
@@ -186,7 +186,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="bubah">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Ubah"/>
+        <Property name="text" type="java.lang.String" value="Update"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bubahActionPerformed"/>
@@ -194,7 +194,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="bhapus">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Hapus"/>
+        <Property name="text" type="java.lang.String" value="Delete"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bhapusActionPerformed"/>
@@ -202,7 +202,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="bbatal">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Batal"/>
+        <Property name="text" type="java.lang.String" value="Cancel"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bbatalActionPerformed"/>
@@ -210,7 +210,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="bkeluar">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Keluar"/>
+        <Property name="text" type="java.lang.String" value="Exit"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bkeluarActionPerformed"/>
@@ -242,7 +242,7 @@
     </Container>
     <Component class="javax.swing.JButton" name="bcari">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Cari"/>
+        <Property name="text" type="java.lang.String" value="Search"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bcariActionPerformed"/>
@@ -261,12 +261,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="ID User"/>
+        <Property name="text" type="java.lang.String" value="User ID"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Nama Lengkap"/>
+        <Property name="text" type="java.lang.String" value="Full Name"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
@@ -304,7 +304,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel10">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Dept/Kelas"/>
+        <Property name="text" type="java.lang.String" value="Dept/Class"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JPasswordField" name="jpw">

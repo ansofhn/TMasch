@@ -34,14 +34,12 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="jLabel3" alignment="0" max="32767" attributes="0"/>
-                          <Component id="jLabel8" alignment="0" pref="145" max="32767" attributes="0"/>
-                          <Component id="jLabel4" alignment="0" max="32767" attributes="0"/>
+                          <Component id="jLabel4" alignment="0" pref="145" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="txtcode" pref="286" max="32767" attributes="0"/>
+                          <Component id="txtrolesname" pref="286" max="32767" attributes="0"/>
                           <Component id="txtid" alignment="0" max="32767" attributes="0"/>
-                          <Component id="txtname" alignment="1" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                   </Group>
@@ -82,23 +80,17 @@
                   <Group type="102" attributes="0">
                       <Component id="txtid" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="txtcode" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                      <Component id="txtname" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="txtrolesname" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
-                          <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="80" pref="80" max="-2" attributes="0"/>
-                          <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="117" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="bsimpan" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="bubah" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -134,7 +126,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="18" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Data Category"/>
+        <Property name="text" type="java.lang.String" value="Data Roles"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
@@ -148,14 +140,14 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Data Category"/>
+        <Property name="text" type="java.lang.String" value="Data Roles"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="txtcode">
+    <Component class="javax.swing.JTextField" name="txtrolesname">
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="ID Category"/>
+        <Property name="text" type="java.lang.String" value="ID Roles"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="bsimpan">
@@ -168,7 +160,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Code Category"/>
+        <Property name="text" type="java.lang.String" value="Roles Name"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="bubah">
@@ -187,8 +179,6 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bhapusActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JTextField" name="txtname">
-    </Component>
     <Component class="javax.swing.JButton" name="bbatal">
       <Properties>
         <Property name="text" type="java.lang.String" value="Cancel"/>
@@ -197,14 +187,10 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bbatalActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel8">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Category Name"/>
-      </Properties>
-    </Component>
     <Component class="javax.swing.JButton" name="bkeluar">
       <Properties>
         <Property name="text" type="java.lang.String" value="Exit"/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bkeluarActionPerformed"/>

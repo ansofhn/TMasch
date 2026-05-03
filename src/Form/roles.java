@@ -18,15 +18,15 @@ import Koneksi.koneksi;
  *
  * @author ansof
  */
-public class categories extends javax.swing.JFrame {
+public class roles extends javax.swing.JFrame {
     private Connection conn = new koneksi().connect();
     private DefaultTableModel tabmode;
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(categories.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(roles.class.getName());
 
     /**
      * Creates new form categories
      */
-    public categories() {
+    public roles() {
         initComponents();
         kosong();
         aktif();
@@ -39,25 +39,23 @@ public class categories extends javax.swing.JFrame {
 
     protected void kosong(){
         txtid.setText("");
-        txtcode.setText("");
-        txtname.setText("");
+        txtrolesname.setText("");
         txtcari.setText("");
     }
 
     protected void datatable(){
-        Object[] Baris ={"ID Category","Code","Category Name"};
+        Object[] Baris ={"ID Roles","Roles Name"};
         tabmode = new DefaultTableModel(null, Baris);
         String cariitem=txtcari.getText();
 
         try {
-            String sql = "SELECT * FROM categories where id like '%"+cariitem+"%' or name like '%"+cariitem+"%' order by id asc";
+            String sql = "SELECT * FROM roles where id like '%"+cariitem+"%' or name like '%"+cariitem+"%' order by id asc";
             Statement stat = conn.createStatement();
             ResultSet hasil = stat.executeQuery(sql);
             while (hasil.next()){
                 tabmode.addRow(new Object[]{
                     hasil.getString(1),
-                    hasil.getString(2),
-                    hasil.getString(3),   
+                    hasil.getString(2), 
                 });
             }
             tblcat.setModel(tabmode);
@@ -80,15 +78,13 @@ public class categories extends javax.swing.JFrame {
         txtcari = new javax.swing.JTextField();
         txtid = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        txtcode = new javax.swing.JTextField();
+        txtrolesname = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         bsimpan = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         bubah = new javax.swing.JButton();
         bhapus = new javax.swing.JButton();
-        txtname = new javax.swing.JTextField();
         bbatal = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
         bkeluar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblcat = new javax.swing.JTable();
@@ -99,7 +95,7 @@ public class categories extends javax.swing.JFrame {
         bcari.addActionListener(this::bcariActionPerformed);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Data Category");
+        jLabel1.setText("Data Roles");
         jLabel1.setToolTipText("");
 
         txtcari.addActionListener(this::txtcariActionPerformed);
@@ -109,14 +105,14 @@ public class categories extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setText("Data Category");
+        jLabel2.setText("Data Roles");
 
-        jLabel3.setText("ID Category");
+        jLabel3.setText("ID Roles");
 
         bsimpan.setText("Save");
         bsimpan.addActionListener(this::bsimpanActionPerformed);
 
-        jLabel4.setText("Code Category");
+        jLabel4.setText("Roles Name");
 
         bubah.setText("Update");
         bubah.addActionListener(this::bubahActionPerformed);
@@ -127,9 +123,8 @@ public class categories extends javax.swing.JFrame {
         bbatal.setText("Cancel");
         bbatal.addActionListener(this::bbatalActionPerformed);
 
-        jLabel8.setText("Category Name");
-
         bkeluar.setText("Exit");
+        bkeluar.setToolTipText("");
         bkeluar.addActionListener(this::bkeluarActionPerformed);
 
         tblcat.setModel(new javax.swing.table.DefaultTableModel(
@@ -164,13 +159,11 @@ public class categories extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtcode, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
-                            .addComponent(txtid)
-                            .addComponent(txtname, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(txtrolesname, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
+                            .addComponent(txtid))
                         .addGap(27, 27, 27))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -202,18 +195,13 @@ public class categories extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(txtcode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(43, 43, 43)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtrolesname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
+                        .addGap(77, 77, 77))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(80, 80, 80)
-                            .addComponent(jLabel8))))
-                .addGap(37, 37, 37)
+                        .addGap(117, 117, 117)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(bsimpan)
                     .addComponent(bubah)
@@ -249,12 +237,11 @@ public class categories extends javax.swing.JFrame {
     }//GEN-LAST:event_txtcariKeyPressed
 
     private void bsimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bsimpanActionPerformed
-        String sql = "insert into categories values (?,?,?)";
+        String sql = "insert into roles values (?,?)";
         try{
             PreparedStatement stat = conn.prepareStatement(sql);
             stat.setString(1, txtid.getText());
-            stat.setString(2, txtcode.getText());
-            stat.setString(3, txtname.getText());
+            stat.setString(2, txtrolesname.getText());
             stat.executeUpdate();
             JOptionPane.showMessageDialog(null, "data berhasil disimpan");
             kosong();
@@ -269,10 +256,9 @@ public class categories extends javax.swing.JFrame {
 
     private void bubahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bubahActionPerformed
         try{
-            String sql = "update categories set code=?,name=? where id='"+txtid.getText()+"'";
+            String sql = "update roles set name=? where id='"+txtid.getText()+"'";
             PreparedStatement stat = conn.prepareStatement(sql);
-            stat.setString(1, txtcode.getText());
-            stat.setString(2, txtname.getText());
+            stat.setString(1, txtrolesname.getText());
 
             stat.executeUpdate();
             JOptionPane.showMessageDialog(null, "data berhasil diubah");
@@ -288,7 +274,7 @@ public class categories extends javax.swing.JFrame {
     private void bhapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bhapusActionPerformed
         int ok = JOptionPane.showConfirmDialog(null,"hapus","konfirmasi dialog",JOptionPane.YES_NO_OPTION);
         if (ok==0){
-            String sql = "delete from categories where id ='"+txtid.getText()+"'";
+            String sql = "delete from roles where id ='"+txtid.getText()+"'";
             try{
                 PreparedStatement stat = conn.prepareStatement(sql);
                 stat.executeUpdate();
@@ -315,8 +301,7 @@ public class categories extends javax.swing.JFrame {
     private void tblcatMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblcatMouseClicked
         int bar = tblcat.getSelectedRow();
         txtid.setText(tabmode.getValueAt(bar, 0).toString());
-        txtcode.setText(tabmode.getValueAt(bar, 1).toString());
-        txtname.setText(tabmode.getValueAt(bar, 2).toString());
+        txtrolesname.setText(tabmode.getValueAt(bar, 1).toString());
     }//GEN-LAST:event_tblcatMouseClicked
 
     /**
@@ -341,7 +326,7 @@ public class categories extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new categories().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new roles().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -355,12 +340,10 @@ public class categories extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblcat;
     private javax.swing.JTextField txtcari;
-    private javax.swing.JTextField txtcode;
     private javax.swing.JTextField txtid;
-    private javax.swing.JTextField txtname;
+    private javax.swing.JTextField txtrolesname;
     // End of variables declaration//GEN-END:variables
 }

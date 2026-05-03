@@ -107,19 +107,19 @@ public class user extends javax.swing.JFrame {
         jLabel1.setText("Data User");
         jLabel1.setToolTipText("");
 
-        bsimpan.setText("Simpan");
+        bsimpan.setText("Save");
         bsimpan.addActionListener(this::bsimpanActionPerformed);
 
-        bubah.setText("Ubah");
+        bubah.setText("Update");
         bubah.addActionListener(this::bubahActionPerformed);
 
-        bhapus.setText("Hapus");
+        bhapus.setText("Delete");
         bhapus.addActionListener(this::bhapusActionPerformed);
 
-        bbatal.setText("Batal");
+        bbatal.setText("Cancel");
         bbatal.addActionListener(this::bbatalActionPerformed);
 
-        bkeluar.setText("Keluar");
+        bkeluar.setText("Exit");
         bkeluar.addActionListener(this::bkeluarActionPerformed);
 
         tblusr.setModel(new javax.swing.table.DefaultTableModel(
@@ -140,7 +140,7 @@ public class user extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblusr);
 
-        bcari.setText("Cari");
+        bcari.setText("Search");
         bcari.addActionListener(this::bcariActionPerformed);
 
         txtcari.addActionListener(this::txtcariActionPerformed);
@@ -152,9 +152,9 @@ public class user extends javax.swing.JFrame {
 
         jLabel2.setText("Data User");
 
-        jLabel3.setText("ID User");
+        jLabel3.setText("User ID");
 
-        jLabel4.setText("Nama Lengkap");
+        jLabel4.setText("Full Name");
 
         jLabel6.setText("Role");
 
@@ -164,7 +164,7 @@ public class user extends javax.swing.JFrame {
 
         jrole.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Guru", "Siswa" }));
 
-        jLabel10.setText("Dept/Kelas");
+        jLabel10.setText("Dept/Class");
 
         jpw.setText("jPasswordField1");
 
@@ -180,9 +180,9 @@ public class user extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(txtcari, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(bcari, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(bcari))
                             .addComponent(jLabel2))
-                        .addContainerGap())
+                        .addContainerGap(367, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(21, 21, 21)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
