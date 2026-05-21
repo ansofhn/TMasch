@@ -3,6 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package Form;
+import Koneksi.koneksi;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import tmasch.UserSession;
 
 /**
  *
@@ -16,7 +22,71 @@ public class TicketManagement extends javax.swing.JPanel {
     public TicketManagement() {
         initComponents();
     }
+    private int userRoleId = 0; 
+    private int userLoggedInId = 0;
+    
+    private void aturHakAksesKomponen() {
+        // Jika integrasi session login kelompokmu sudah siap, tinggal panggil:
+        userRoleId = tmasch.UserSession.getRoleId();
+        userLoggedInId = tmasch.UserSession.getId();
 
+        if (userRoleId == 1) {
+            // Hak Akses ADMIN (role_id = 1)
+            cmbAssignTo.setEnabled(true);
+            btnAssign.setEnabled(true);
+            txtResolutionNote.setEnabled(false);
+            btnCloseTicket.setEnabled(false);
+        } else if (userRoleId == 2) {
+            // Hak Akses GURU / STAFF (role_id = 2)
+            cmbAssignTo.setEnabled(false);
+            btnAssign.setEnabled(false);
+            txtResolutionNote.setEnabled(true);
+            btnCloseTicket.setEnabled(true);
+        } else {
+            // Opsi Pengaman jika Siswa (role_id = 3) atau orang lain tersasar ke panel ini
+            cmbAssignTo.setEnabled(false);
+            btnAssign.setEnabled(false);
+            txtResolutionNote.setEnabled(false);
+            btnCloseTicket.setEnabled(false);
+        }
+}
+    
+    private void loadTicketTable() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("ID Tiket");
+        model.addColumn("Judul");
+        model.addColumn("Kategori");
+        model.addColumn("Status");
+        model.addColumn("Ditugaskan Ke");
+        
+        String sql = "SELECT t.id, t.title, c.name AS kategori, s.name AS status_nama, u.username AS nama_staf " +
+                     "FROM tickets t " +
+                     "JOIN categories c ON t.category_id = c.id " +
+                     "JOIN statuses s ON t.status_id = s.id " +
+                     "LEFT JOIN users u ON t.assigned_to = u.id ORDER BY t.id DESC";
+        
+        try {
+            Connection conn = new koneksi().connect();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("kategori"),
+                    rs.getString("status_nama"),
+                    rs.getString("nama_staf") != null ? rs.getString("nama_staf") : "Belum Di-assign"
+                });
+            }
+            tblTickets.setModel(model);
+            rs.close();
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal memuat tabel: " + e.getMessage());
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -26,19 +96,212 @@ public class TicketManagement extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jPanelTableData = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblTickets = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtTicketID = new javax.swing.JTextField();
+        txtCreatedBy = new javax.swing.JTextField();
+        txtRole = new javax.swing.JTextField();
+        txtCategory = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        cmbAssignTo = new javax.swing.JComboBox<>();
+        btnAssign = new javax.swing.JButton();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtResolutionNote = new javax.swing.JTextArea();
+        btnCloseTicket = new javax.swing.JButton();
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setText("Ticket Management");
+
+        jLabel2.setText("Ticket ID");
+
+        jPanelTableData.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Ticket"));
+
+        tblTickets.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6"
+            }
+        ));
+        jScrollPane1.setViewportView(tblTickets);
+
+        javax.swing.GroupLayout jPanelTableDataLayout = new javax.swing.GroupLayout(jPanelTableData);
+        jPanelTableData.setLayout(jPanelTableDataLayout);
+        jPanelTableDataLayout.setHorizontalGroup(
+            jPanelTableDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelTableDataLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+        );
+        jPanelTableDataLayout.setVerticalGroup(
+            jPanelTableDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelTableDataLayout.createSequentialGroup()
+                .addContainerGap(36, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        jLabel3.setText("Created By");
+
+        jLabel4.setText("Category");
+
+        jLabel5.setText("Role");
+
+        txtCreatedBy.addActionListener(this::txtCreatedByActionPerformed);
+
+        txtCategory.addActionListener(this::txtCategoryActionPerformed);
+
+        jLabel6.setText("Assigned To");
+
+        jLabel7.setText("Priority");
+
+        jLabel8.setText("Resolution Note");
+
+        cmbAssignTo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        btnAssign.setText("Assign");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        txtResolutionNote.setColumns(20);
+        txtResolutionNote.setRows(5);
+        jScrollPane2.setViewportView(txtResolutionNote);
+
+        btnCloseTicket.setText("Close Ticket");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(265, 265, 265)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanelTableData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtTicketID)
+                            .addComponent(txtCreatedBy)
+                            .addComponent(txtRole)
+                            .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel8))
+                            .addComponent(btnAssign))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnCloseTicket)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(cmbAssignTo, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(18, 18, 18))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addComponent(jLabel1)
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtTicketID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(txtCreatedBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(txtRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(txtCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(cmbAssignTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addGap(34, 34, 34))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAssign)
+                    .addComponent(btnCloseTicket))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanelTableData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void txtCreatedByActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCreatedByActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCreatedByActionPerformed
+
+    private void txtCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCategoryActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCategoryActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAssign;
+    private javax.swing.JButton btnCloseTicket;
+    private javax.swing.JComboBox<String> cmbAssignTo;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanelTableData;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable tblTickets;
+    private javax.swing.JTextField txtCategory;
+    private javax.swing.JTextField txtCreatedBy;
+    private javax.swing.JTextArea txtResolutionNote;
+    private javax.swing.JTextField txtRole;
+    private javax.swing.JTextField txtTicketID;
     // End of variables declaration//GEN-END:variables
 }
