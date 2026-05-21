@@ -60,7 +60,7 @@ public class CreateTicketPanel extends javax.swing.JPanel {
 
         jLabel3.setText("Category");
 
-        cbcat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kategori --", "Akademik ", "Non-Akademik", "Legalisir", "Permohonan Data/Info", "Pengajuan Perubahan Data" }));
+        cbcat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kategori --", "Akademik", "Non-Akademik", "Legalisir", "Permohonan Data/Info", "Pengajuan Perubahan Data" }));
 
         jLabel1.setText("Ticket Subject");
 
@@ -157,13 +157,10 @@ public class CreateTicketPanel extends javax.swing.JPanel {
         String subjek = txtsub.getText().trim();
         String deskripsi = txtdesc.getText().trim();
 
-        // 1. Validasi jika form masih ada yang kosong atau belum memilih
         if (kategoriTeks.isEmpty() || kategoriTeks.startsWith("--") || subjek.isEmpty() || deskripsi.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Mohon lengkapi semua data form tiket!", "Validasi Gagal", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        // 2. KONTROL ID KATEGORI MENGGUNAKAN EQUALS IGNORE CASE (Paling Aman dari Typo)
         int categoryId = 0;
         if (kategoriTeks.equalsIgnoreCase("Akademik")) {
             categoryId = 1;
@@ -177,36 +174,30 @@ public class CreateTicketPanel extends javax.swing.JPanel {
             categoryId = 5;
         }
 
-        // VALIDASI TAMBAHAN: Jika categoryId tetap 0 (tidak masuk ke kondisi manapun), hentikan proses eksekusi
         if (categoryId == 0) {
             JOptionPane.showMessageDialog(this, "Kategori '" + kategoriTeks + "' tidak dikenali oleh sistem.\nPeriksa kembali teks pada model Combo Box Anda!", "Error Kategori", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // ID User pembuat tiket (Sesuai user admin bawaan SQL kalian yang memiliki ID = 1)
         int idUserLogin = tmasch.UserSession.getId(); 
-
-        // ID Status untuk 'OPEN' berdasarkan tabel `statuses` kalian adalah 1
         int statusId = 1; 
 
-        // 3. Eksekusi Query Insert ke Database tmasch_db
         String sql = "INSERT INTO tickets (title, description, category_id, status_id, created_by, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
 
         try {
-            // Membuka koneksi ke database local
-            Connection conn = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/tmasch_db", "root", "");
+            Connection conn = new koneksi().connect();
 
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, subjek);       // title
-            ps.setString(2, deskripsi);    // description
-            ps.setInt(3, categoryId);      // category_id (Pasti bernilai 1-5, tidak mungkin 0)
-            ps.setInt(4, statusId);        // status_id (1 = OPEN)
-            ps.setInt(5, idUserLogin);     // created_by (1 = Admin)
+            ps.setString(1, subjek); 
+            ps.setString(2, deskripsi);
+            ps.setInt(3, categoryId);     
+            ps.setInt(4, statusId);
+            ps.setInt(5, idUserLogin);
 
             int statusSimpan = ps.executeUpdate();
             if (statusSimpan > 0) {
                 JOptionPane.showMessageDialog(this, "Tiket baru berhasil dibuat dengan status OPEN!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-                resetForm(); // Bersihkan field form
+                resetForm(); 
             }
 
             ps.close();

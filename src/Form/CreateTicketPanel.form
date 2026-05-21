@@ -128,7 +128,7 @@
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="6">
             <StringItem index="0" value="-- Pilih Kategori --"/>
-            <StringItem index="1" value="Akademik "/>
+            <StringItem index="1" value="Akademik"/>
             <StringItem index="2" value="Non-Akademik"/>
             <StringItem index="3" value="Legalisir"/>
             <StringItem index="4" value="Permohonan Data/Info"/>
