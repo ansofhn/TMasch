@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package Form;
+import Koneksi.koneksi;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -25,6 +26,11 @@ public class CreateTicketPanel extends javax.swing.JPanel {
         txtuser.setText(LoginUser);
     }
 
+    private void resetForm() {
+        cbcat.setSelectedIndex(0);
+        txtsub.setText("");
+        txtdesc.setText("");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -65,8 +71,10 @@ public class CreateTicketPanel extends javax.swing.JPanel {
         jScrollPane1.setViewportView(txtdesc);
 
         btnsubmit.setText("Submit");
+        btnsubmit.addActionListener(this::btnsubmitActionPerformed);
 
         btncancel.setText("Cancel");
+        btncancel.addActionListener(this::btncancelActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -136,6 +144,77 @@ public class CreateTicketPanel extends javax.swing.JPanel {
                 .addContainerGap(31, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btncancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncancelActionPerformed
+    int konfirmasi = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin membatalkan dan mengosongkan isi form?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (konfirmasi == JOptionPane.YES_OPTION) {
+            resetForm();
+        }
+    }//GEN-LAST:event_btncancelActionPerformed
+
+    private void btnsubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnsubmitActionPerformed
+        String kategoriTeks = cbcat.getSelectedItem() != null ? cbcat.getSelectedItem().toString().trim() : "";
+        String subjek = txtsub.getText().trim();
+        String deskripsi = txtdesc.getText().trim();
+
+        // 1. Validasi jika form masih ada yang kosong atau belum memilih
+        if (kategoriTeks.isEmpty() || kategoriTeks.startsWith("--") || subjek.isEmpty() || deskripsi.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mohon lengkapi semua data form tiket!", "Validasi Gagal", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 2. KONTROL ID KATEGORI MENGGUNAKAN EQUALS IGNORE CASE (Paling Aman dari Typo)
+        int categoryId = 0;
+        if (kategoriTeks.equalsIgnoreCase("Akademik")) {
+            categoryId = 1;
+        } else if (kategoriTeks.equalsIgnoreCase("Non-Akademik")) {
+            categoryId = 2;
+        } else if (kategoriTeks.equalsIgnoreCase("Legalisir")) {
+            categoryId = 3;
+        } else if (kategoriTeks.equalsIgnoreCase("Permohonan Data/Info") || kategoriTeks.equalsIgnoreCase("Permohonan Data")) {
+            categoryId = 4;
+        } else if (kategoriTeks.equalsIgnoreCase("Pengajuan Perubahan Data")) {
+            categoryId = 5;
+        }
+
+        // VALIDASI TAMBAHAN: Jika categoryId tetap 0 (tidak masuk ke kondisi manapun), hentikan proses eksekusi
+        if (categoryId == 0) {
+            JOptionPane.showMessageDialog(this, "Kategori '" + kategoriTeks + "' tidak dikenali oleh sistem.\nPeriksa kembali teks pada model Combo Box Anda!", "Error Kategori", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // ID User pembuat tiket (Sesuai user admin bawaan SQL kalian yang memiliki ID = 1)
+        int idUserLogin = tmasch.UserSession.getId(); 
+
+        // ID Status untuk 'OPEN' berdasarkan tabel `statuses` kalian adalah 1
+        int statusId = 1; 
+
+        // 3. Eksekusi Query Insert ke Database tmasch_db
+        String sql = "INSERT INTO tickets (title, description, category_id, status_id, created_by, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
+
+        try {
+            // Membuka koneksi ke database local
+            Connection conn = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/tmasch_db", "root", "");
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, subjek);       // title
+            ps.setString(2, deskripsi);    // description
+            ps.setInt(3, categoryId);      // category_id (Pasti bernilai 1-5, tidak mungkin 0)
+            ps.setInt(4, statusId);        // status_id (1 = OPEN)
+            ps.setInt(5, idUserLogin);     // created_by (1 = Admin)
+
+            int statusSimpan = ps.executeUpdate();
+            if (statusSimpan > 0) {
+                JOptionPane.showMessageDialog(this, "Tiket baru berhasil dibuat dengan status OPEN!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+                resetForm(); // Bersihkan field form
+            }
+
+            ps.close();
+            conn.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan tiket ke database:\n" + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnsubmitActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
