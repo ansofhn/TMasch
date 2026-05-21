@@ -15,20 +15,52 @@ public class MainDashboard extends javax.swing.JFrame {
     /**
      * Creates new form MainDashboard
      */
-    public MainDashboard() {
+public MainDashboard() {
         initComponents();
-    this.setSize(800, 600);
-    this.setLocationRelativeTo(null);
-    
-    // 1. Panggil file CreateTicketPanel yang baru saja kita desain di atas
-    Form.CreateTicketPanel halCreateTicket = new Form.CreateTicketPanel();
-    
-    // 2. Masukkan ke dalam panelKontenUtama (panel kanan) dan beri nama identitas "buka_tiket"
-    panelKontenUtama.add(halCreateTicket, "buka_tiket");
-    
-    // 3. Langsung tampilkan halaman tiket ini sebagai halaman utama saat Dashboard dibuka
-    java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
-    cl.show(panelKontenUtama, "buka_tiket");
+        this.setSize(800, 600);
+        this.setLocationRelativeTo(null);
+        int currentRoleId = tmasch.UserSession.getRoleId();
+        int currentUserId = tmasch.UserSession.getId();
+        
+        // 1. Panggil file CreateTicketPanel yang sudah ada
+        Form.CreateTicketPanel halCreateTicket = new Form.CreateTicketPanel();
+        panelKontenUtama.add(halCreateTicket, "buka_tiket");
+
+        // ======= TAMBAHKAN KODE BARU INI =======
+        // 2. Panggil file TicketManagementPanel yang baru dibuat
+        // Parameter pertama: role_id (1 = Admin, 2 = Guru). Parameter kedua: user_id login.
+        // Untuk testing awal, kita set sebagai Admin (1, 1) terlebih dahulu.
+        Form.TicketManagement halManagement = new Form.TicketManagement(1, 1);
+        
+        // Masukkan ke dalam panelKontenUtama dan beri nama identitas "kelola_tiket"
+        panelKontenUtama.add(halManagement, "kelola_tiket");
+        // =======================================
+
+        // 3. Langsung tampilkan halaman tiket ini sebagai halaman utama saat Dashboard dibuka
+        java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
+        cl.show(panelKontenUtama, "buka_tiket");
+        tampilkanSambutanUser();
+    }
+
+private void tampilkanSambutanUser() {
+    // 1. Ambil data nama lengkap dan nama role dari UserSession
+    String namaUser = tmasch.UserSession.getFullName();
+    int roleId = tmasch.UserSession.getRoleId();
+    String namaRole = "";
+
+    // 2. Konversi role_id angka menjadi teks yang mudah dibaca
+    if (roleId == 1) {
+        namaRole = "Admin";
+    } else if (roleId == 2) {
+        namaRole = "Guru / Staff";
+    } else if (roleId == 3) {
+        namaRole = "Siswa";
+    } else {
+        namaRole = "Tidak Diketahui";
+    }
+
+    // 3. Set teks ke JLabel yang sudah kita buat tadi
+    lblWelcome.setText("<html>Halo, Selamat Datang <b>" + namaUser + "</b>!<br>Role anda adalah: <u>" + namaRole + "</u></html>");
 }
 
     /**
@@ -41,7 +73,9 @@ public class MainDashboard extends javax.swing.JFrame {
     private void initComponents() {
 
         panelSidebar = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnCreateTickett = new javax.swing.JButton();
+        btnManageTicket = new javax.swing.JButton();
+        lblWelcome = new javax.swing.JLabel();
         panelKontenUtama = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -49,8 +83,17 @@ public class MainDashboard extends javax.swing.JFrame {
         panelSidebar.setBackground(new java.awt.Color(102, 102, 102));
         panelSidebar.setPreferredSize(new java.awt.Dimension(150, 404));
 
-        jButton1.setText("Create Ticket");
-        jButton1.addActionListener(this::jButton1ActionPerformed);
+        btnCreateTickett.setText("Create Ticket");
+        btnCreateTickett.addActionListener(this::btnCreateTickettActionPerformed);
+
+        btnManageTicket.setText("Manage Ticket");
+        btnManageTicket.addActionListener(this::btnManageTicketActionPerformed);
+
+        lblWelcome.setForeground(new java.awt.Color(255, 255, 255));
+        lblWelcome.setText("aiwodhawubfoawubfouawbfo");
+        lblWelcome.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        lblWelcome.setMaximumSize(new java.awt.Dimension(108, 90));
+        lblWelcome.setMinimumSize(new java.awt.Dimension(100, 16));
 
         javax.swing.GroupLayout panelSidebarLayout = new javax.swing.GroupLayout(panelSidebar);
         panelSidebar.setLayout(panelSidebarLayout);
@@ -58,15 +101,22 @@ public class MainDashboard extends javax.swing.JFrame {
             panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelSidebarLayout.createSequentialGroup()
                 .addGap(26, 26, 26)
-                .addComponent(jButton1)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnCreateTickett, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnManageTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         panelSidebarLayout.setVerticalGroup(
             panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelSidebarLayout.createSequentialGroup()
-                .addGap(141, 141, 141)
-                .addComponent(jButton1)
-                .addContainerGap(240, Short.MAX_VALUE))
+                .addGap(23, 23, 23)
+                .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnCreateTickett)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnManageTicket)
+                .addContainerGap(221, Short.MAX_VALUE))
         );
 
         getContentPane().add(panelSidebar, java.awt.BorderLayout.WEST);
@@ -78,10 +128,15 @@ public class MainDashboard extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCreateTickettActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateTickettActionPerformed
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
         cl.show(panelKontenUtama, "buka_tiket");
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCreateTickettActionPerformed
+
+    private void btnManageTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageTicketActionPerformed
+        java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
+        cl.show(panelKontenUtama, "kelola_tiket");
+    }//GEN-LAST:event_btnManageTicketActionPerformed
 
     /**
      * @param args the command line arguments
@@ -109,7 +164,9 @@ public class MainDashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnCreateTickett;
+    private javax.swing.JButton btnManageTicket;
+    private javax.swing.JLabel lblWelcome;
     private javax.swing.JPanel panelKontenUtama;
     private javax.swing.JPanel panelSidebar;
     // End of variables declaration//GEN-END:variables
