@@ -54,7 +54,7 @@ public class CreateTicketPanel extends javax.swing.JPanel {
 
         jLabel3.setText("Category");
 
-        cbcat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Akademik", "Non-Akademik", "Legalisir", "Permohonan Data/Info", "Pengajuan Perubahan Data" }));
+        cbcat.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih Kategori --", "Akademik ", "Non-Akademik", "Legalisir", "Permohonan Data/Info", "Pengajuan Perubahan Data" }));
 
         jLabel1.setText("Ticket Subject");
 
@@ -82,13 +82,13 @@ public class CreateTicketPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(19, 19, 19)
-                                .addComponent(cbcat, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(cbcat, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(txtuser, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addComponent(txtuser))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()

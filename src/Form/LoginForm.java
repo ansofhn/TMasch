@@ -174,9 +174,8 @@ public class LoginForm extends javax.swing.JFrame {
 
         try {
             Koneksi.koneksi db = new Koneksi.koneksi(); 
-            java.sql.Connection conn = db.connect(); // Memanggil method connect()
+            java.sql.Connection conn = db.connect();
 
-            // 3. Query untuk mencocokkan username & password
             String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
             java.sql.PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, username);
@@ -190,8 +189,6 @@ public class LoginForm extends javax.swing.JFrame {
                 tmasch.UserSession.setRoleId(rs.getInt("role_id"));
 
                 javax.swing.JOptionPane.showMessageDialog(this, "Login Berhasil!\nSelamat datang, " + tmasch.UserSession.getFullName(), "Sukses", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-
-                // Buka Main Dashboard (Nanti di-uncomment setelah dashboard dibuat)
                 Form.MainDashboard dashboard = new Form.MainDashboard();
                 dashboard.setVisible(true);
 
