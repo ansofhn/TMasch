@@ -45,8 +45,8 @@ public class TicketManagement extends javax.swing.JPanel {
             cmbAssignTo.setEnabled(true);
             cmbPriority.setEnabled(true);
             btnAssign.setEnabled(true);
-            txtResolutionNote.setEnabled(false);
-            btnCloseTicket.setEnabled(false);
+            txtResolutionNote.setEnabled(true);
+            btnCloseTicket.setEnabled(true);
         } else if (userRoleId == 2) {
             // Hak Akses GURU / STAFF (role_id = 2)
             cmbAssignTo.setEnabled(false);
@@ -91,7 +91,7 @@ public class TicketManagement extends javax.swing.JPanel {
 
     // JIKA GURU (role_id = 2), batasi hanya menampilkan tiket milik dia sendiri
     if (userRoleId == 2) {
-        sql += "WHERE t.assigned_to = ? ";
+        sql += "WHERE t.assigned_to = ? " ;
     }
     
     sql += "ORDER BY t.id DESC";
@@ -469,7 +469,13 @@ public class TicketManagement extends javax.swing.JPanel {
             
             // Pengunci otomatis: Jika status tiket di tabel bertuliskan "Closed", kunci tombol aksi
             String statusTiket = tblTickets.getValueAt(row, 4).toString();
-            if (statusTiket.equalsIgnoreCase("Closed")) {
+            if (statusTiket.equalsIgnoreCase("Open")) {
+                txtResolutionNote.setEnabled(true);
+                btnCloseTicket.setEnabled(true);
+            }else if (statusTiket.equalsIgnoreCase("In_Progress")) {
+                txtResolutionNote.setEnabled(true);
+                btnCloseTicket.setEnabled(true);
+            }else if (statusTiket.equalsIgnoreCase("Closed")) {
                 txtResolutionNote.setEnabled(false);
                 btnCloseTicket.setEnabled(false);
             } else if (userRoleId == 2) {
