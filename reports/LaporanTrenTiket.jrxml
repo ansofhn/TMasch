@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="LaporanTrenTiket"
+              pageWidth="842" pageHeight="595"
+              orientation="Landscape"
+              columnWidth="782" leftMargin="30" rightMargin="30"
+              topMargin="20" bottomMargin="20"
+              uuid="a1b2c3d4-0003-0003-0003-000000000003">
+
+    <queryString>
+        <![CDATA[
+        SELECT
+            DATE_FORMAT(t.created_at, '%Y-%m')       AS bulan,
+            COUNT(*)                                   AS total,
+            SUM(s.name = 'OPEN')                      AS jml_open,
+            SUM(s.name = 'ASSIGNED')                  AS jml_assigned,
+            SUM(s.name = 'IN_PROGRESS')               AS jml_progress,
+            SUM(s.name = 'RESOLVED')                  AS jml_resolved,
+            SUM(s.name = 'CLOSED')                    AS jml_closed
+        FROM tickets t
+        JOIN statuses s ON t.status_id = s.id
+        GROUP BY bulan
+        ORDER BY bulan DESC
+        LIMIT 24
+        ]]>
+    </queryString>
+
+    <field name="bulan"        class="java.lang.String"/>
+    <field name="total"        class="java.lang.Long"/>
+    <field name="jml_open"     class="java.lang.Long"/>
+    <field name="jml_assigned" class="java.lang.Long"/>
+    <field name="jml_progress" class="java.lang.Long"/>
+    <field name="jml_resolved" class="java.lang.Long"/>
+    <field name="jml_closed"   class="java.lang.Long"/>
+
+    <variable name="grandTotal" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{total}]]></variableExpression>
+    </variable>
+    <variable name="grandResolved" class="java.lang.Long" calculation="Sum">
+        <variableExpression><![CDATA[$F{jml_resolved}]]></variableExpression>
+    </variable>
+
+    <!-- Title -->
+    <title>
+        <band height="60">
+            <rectangle><reportElement x="0" y="0" width="782" height="55" backcolor="#1E3A5F" mode="Opaque"/></rectangle>
+            <staticText>
+                <reportElement x="10" y="5" width="762" height="30" forecolor="#FFFFFF"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="16" isBold="true"/></textElement>
+                <text><![CDATA[LAPORAN TREN TIKET DARI WAKTU KE WAKTU — T-Masch]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="10" y="35" width="762" height="18" forecolor="#93C5FD"/>
+                <textElement verticalAlignment="Middle"><font size="10"/></textElement>
+                <text><![CDATA[Menampilkan jumlah tiket per bulan berdasarkan status]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- Column Header -->
+    <columnHeader>
+        <band height="28">
+            <rectangle><reportElement x="0" y="0" width="782" height="28" backcolor="#334155" mode="Opaque"/></rectangle>
+            <staticText><reportElement x="0"   y="0" width="100" height="28" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Bulan]]></text></staticText>
+            <staticText><reportElement x="102" y="0" width="80"  height="28" forecolor="#FFFFFF"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Total Tiket]]></text></staticText>
+            <staticText><reportElement x="184" y="0" width="80"  height="28" forecolor="#60A5FA"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[OPEN]]></text></staticText>
+            <staticText><reportElement x="266" y="0" width="80"  height="28" forecolor="#FCD34D"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[ASSIGNED]]></text></staticText>
+            <staticText><reportElement x="348" y="0" width="80"  height="28" forecolor="#C084FC"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[IN PROGRESS]]></text></staticText>
+            <staticText><reportElement x="430" y="0" width="80"  height="28" forecolor="#6EE7B7"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[RESOLVED]]></text></staticText>
+            <staticText><reportElement x="512" y="0" width="80"  height="28" forecolor="#94A3B8"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[CLOSED]]></text></staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detail -->
+    <detail>
+        <band height="24">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="24" backcolor="#F8FAFC" mode="Opaque">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+            </rectangle>
+            <textField><reportElement x="0"   y="0" width="100" height="24"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{bulan}]]></textFieldExpression></textField>
+            <textField><reportElement x="102" y="0" width="80"  height="24"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{total}]]></textFieldExpression></textField>
+            <textField><reportElement x="184" y="0" width="80"  height="24"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{jml_open}]]></textFieldExpression></textField>
+            <textField><reportElement x="266" y="0" width="80"  height="24"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{jml_assigned}]]></textFieldExpression></textField>
+            <textField><reportElement x="348" y="0" width="80"  height="24"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{jml_progress}]]></textFieldExpression></textField>
+            <textField><reportElement x="430" y="0" width="80"  height="24"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{jml_resolved}]]></textFieldExpression></textField>
+            <textField><reportElement x="512" y="0" width="80"  height="24"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{jml_closed}]]></textFieldExpression></textField>
+        </band>
+    </detail>
+
+    <!-- Summary -->
+    <summary>
+        <band height="30">
+            <rectangle><reportElement x="0" y="0" width="782" height="28" backcolor="#1E293B" mode="Opaque"/></rectangle>
+            <staticText><reportElement x="0" y="0" width="100" height="28" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[GRAND TOTAL]]></text></staticText>
+            <textField><reportElement x="102" y="0" width="80" height="28" forecolor="#FFFFFF"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$V{grandTotal}]]></textFieldExpression></textField>
+        </band>
+    </summary>
+
+    <pageFooter>
+        <band height="20">
+            <staticText><reportElement x="0" y="0" width="500" height="20" forecolor="#94A3B8"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><text><![CDATA[T-Masch — Laporan Tren Tiket]]></text></staticText>
+            <textField><reportElement x="682" y="0" width="100" height="20" forecolor="#94A3B8"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Hal. " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+        </band>
+    </pageFooter>
+
+</jasperReport>

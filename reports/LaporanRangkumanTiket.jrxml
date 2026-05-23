@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="LaporanRangkumanTiket"
+              pageWidth="842" pageHeight="595"
+              orientation="Landscape"
+              columnWidth="782" leftMargin="30" rightMargin="30"
+              topMargin="20" bottomMargin="20"
+              uuid="a1b2c3d4-0001-0001-0001-000000000001">
+
+    <parameter name="filterStatus" class="java.lang.String">
+        <defaultValueExpression><![CDATA["Semua"]]></defaultValueExpression>
+    </parameter>
+
+    <queryString>
+        <![CDATA[
+        SELECT
+            t.ticket_number     AS no_tiket,
+            t.title             AS judul,
+            c.name              AS kategori,
+            p.name              AS prioritas,
+            s.name              AS status,
+            cb.full_name        AS dibuat_oleh,
+            COALESCE(ab.full_name, '-') AS ditugaskan,
+            DATE_FORMAT(t.created_at, '%d/%m/%Y %H:%i') AS tgl_buat,
+            COALESCE(DATE_FORMAT(t.resolved_at,'%d/%m/%Y %H:%i'),'-') AS tgl_selesai
+        FROM tickets t
+        JOIN categories c  ON t.category_id  = c.id
+        JOIN priorities p  ON t.priority_id  = p.id
+        JOIN statuses   s  ON t.status_id    = s.id
+        JOIN users     cb  ON t.created_by   = cb.id
+        LEFT JOIN users ab ON t.assigned_to  = ab.id
+        ORDER BY t.id DESC
+        ]]>
+    </queryString>
+
+    <field name="no_tiket"    class="java.lang.String"/>
+    <field name="judul"       class="java.lang.String"/>
+    <field name="kategori"    class="java.lang.String"/>
+    <field name="prioritas"   class="java.lang.String"/>
+    <field name="status"      class="java.lang.String"/>
+    <field name="dibuat_oleh" class="java.lang.String"/>
+    <field name="ditugaskan"  class="java.lang.String"/>
+    <field name="tgl_buat"    class="java.lang.String"/>
+    <field name="tgl_selesai" class="java.lang.String"/>
+
+    <!-- ── TITLE ── -->
+    <title>
+        <band height="60" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="55" backcolor="#1E3A5F" mode="Opaque"/>
+            </rectangle>
+            <staticText>
+                <reportElement x="10" y="5" width="762" height="30" forecolor="#FFFFFF"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[LAPORAN RANGKUMAN TIKET — T-Masch]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="10" y="35" width="762" height="18" forecolor="#93C5FD"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="10"/>
+                </textElement>
+                <text><![CDATA[Ticketing Management System Administration School]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- ── COLUMN HEADER ── -->
+    <columnHeader>
+        <band height="24" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="782" height="24" backcolor="#334155" mode="Opaque"/>
+            </rectangle>
+            <staticText><reportElement x="0"   y="0" width="70"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[No. Tiket]]></text></staticText>
+            <staticText><reportElement x="72"  y="0" width="180" height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Judul]]></text></staticText>
+            <staticText><reportElement x="254" y="0" width="100" height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Kategori]]></text></staticText>
+            <staticText><reportElement x="356" y="0" width="70"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Prioritas]]></text></staticText>
+            <staticText><reportElement x="428" y="0" width="80"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Status]]></text></staticText>
+            <staticText><reportElement x="510" y="0" width="110" height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Dibuat Oleh]]></text></staticText>
+            <staticText><reportElement x="622" y="0" width="80"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Tgl Buat]]></text></staticText>
+            <staticText><reportElement x="704" y="0" width="78"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><text><![CDATA[Tgl Selesai]]></text></staticText>
+        </band>
+    </columnHeader>
+
+    <!-- ── DETAIL ── -->
+    <detail>
+        <band height="22" splitType="Stretch">
+            <textField isStretchWithOverflow="true">
+                <reportElement x="0"   y="0" width="70"  height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{no_tiket}]]></textFieldExpression>
+            </textField>
+            <textField isStretchWithOverflow="true">
+                <reportElement x="72"  y="0" width="180" height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="254" y="0" width="100" height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{kategori}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="356" y="0" width="70"  height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{prioritas}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="428" y="0" width="80"  height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="510" y="0" width="110" height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{dibuat_oleh}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="622" y="0" width="80"  height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{tgl_buat}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="704" y="0" width="78"  height="22" style="detail_cell"/>
+                <textElement><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{tgl_selesai}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- ── PAGE FOOTER ── -->
+    <pageFooter>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="400" height="20" forecolor="#94A3B8"/>
+                <textElement verticalAlignment="Middle"><font size="8"/></textElement>
+                <text><![CDATA[T-Masch — Ticketing Management System Administration School]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="682" y="0" width="100" height="20" forecolor="#94A3B8"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement>
+                <textFieldExpression><![CDATA["Hal. " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <!-- ── STYLES ── -->
+    <style name="detail_cell" default="true">
+        <pen lineWidth="0.5" lineColor="#E2E8F0"/>
+    </style>
+
+</jasperReport>
