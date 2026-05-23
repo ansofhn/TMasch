@@ -12,25 +12,26 @@
     <queryString>
         <![CDATA[
         SELECT
-            u.full_name                                                           AS nama_user,
-            r.name                                                                AS role,
-            u.department                                                          AS dept,
-            (SELECT COUNT(*) FROM tickets t  WHERE t.created_by  = u.id)         AS tiket_dibuat,
-            (SELECT COUNT(*) FROM tickets t2
-             JOIN statuses s2 ON t2.status_id=s2.id
-             WHERE t2.created_by=u.id AND s2.name='RESOLVED')                   AS tiket_selesai,
-            (SELECT COUNT(*) FROM tickets t3
-             JOIN statuses s3 ON t3.status_id=s3.id
-             WHERE t3.created_by=u.id
-             AND s3.name NOT IN ('RESOLVED','CLOSED'))                           AS tiket_aktif,
-            COALESCE(
-              ROUND((SELECT AVG(TIMESTAMPDIFF(MINUTE,t4.created_at,t4.resolved_at))/60.0
-                     FROM tickets t4 WHERE t4.assigned_to=u.id
-                     AND t4.resolved_at IS NOT NULL), 1), 0)                     AS avg_jam_resolusi,
-            COALESCE(DATE_FORMAT(u.last_login,'%d/%m/%Y %H:%i'), '-')            AS last_login
+            u.full_name                                                             AS nama_user,
+            r.name                                                                  AS role,
+            u.department                                                            AS dept,
+            (SELECT COUNT(*) FROM tickets t
+             WHERE t.created_by = u.id)                                            AS tiket_dibuat,
+            (SELECT COUNT(*) FROM tickets t
+             WHERE t.created_by = u.id
+             AND t.status_id = (SELECT id FROM statuses WHERE name = 'RESOLVED' LIMIT 1))
+                                                                                   AS tiket_selesai,
+            (SELECT COUNT(*) FROM tickets t
+             WHERE t.created_by = u.id
+             AND t.status_id NOT IN (
+                 SELECT id FROM statuses WHERE name IN ('RESOLVED','CLOSED')
+             ))                                                                     AS tiket_aktif,
+            COALESCE(ROUND((SELECT AVG(TIMESTAMPDIFF(MINUTE, t.created_at, t.resolved_at)) / 60.0
+             FROM tickets t
+             WHERE t.assigned_to = u.id
+             AND t.resolved_at IS NOT NULL), 1), 0)                                AS avg_jam_resolusi
         FROM users u
         JOIN roles r ON u.role_id = r.id
-        WHERE u.is_active = 1
         ORDER BY tiket_dibuat DESC
         ]]>
     </queryString>
@@ -42,7 +43,6 @@
     <field name="tiket_selesai"    class="java.lang.Long"/>
     <field name="tiket_aktif"      class="java.lang.Long"/>
     <field name="avg_jam_resolusi" class="java.lang.Double"/>
-    <field name="last_login"       class="java.lang.String"/>
 
     <!-- Title -->
     <title>
@@ -71,8 +71,7 @@
             <staticText><reportElement x="256" y="0" width="45"  height="28" forecolor="#60A5FA"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Dibuat]]></text></staticText>
             <staticText><reportElement x="303" y="0" width="45"  height="28" forecolor="#6EE7B7"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Selesai]]></text></staticText>
             <staticText><reportElement x="350" y="0" width="40"  height="28" forecolor="#FCD34D"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Aktif]]></text></staticText>
-            <staticText><reportElement x="392" y="0" width="55"  height="28" forecolor="#C084FC"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Avg (jam)]]></text></staticText>
-            <staticText><reportElement x="449" y="0" width="86"  height="28" forecolor="#FFFFFF"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Login Terakhir]]></text></staticText>
+            <staticText><reportElement x="392" y="0" width="143" height="28" forecolor="#C084FC"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Avg Resolusi (jam)]]></text></staticText>
         </band>
     </columnHeader>
 
@@ -91,8 +90,7 @@
             <textField><reportElement x="256" y="0" width="45"  height="23"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9" isBold="true"/></textElement><textFieldExpression><![CDATA[$F{tiket_dibuat}]]></textFieldExpression></textField>
             <textField><reportElement x="303" y="0" width="45"  height="23"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{tiket_selesai}]]></textFieldExpression></textField>
             <textField><reportElement x="350" y="0" width="40"  height="23"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="9"/></textElement><textFieldExpression><![CDATA[$F{tiket_aktif}]]></textFieldExpression></textField>
-            <textField><reportElement x="392" y="0" width="55"  height="23"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{avg_jam_resolusi} + " jam"]]></textFieldExpression></textField>
-            <textField><reportElement x="449" y="0" width="86"  height="23"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{last_login}]]></textFieldExpression></textField>
+            <textField><reportElement x="392" y="0" width="143" height="23"/><textElement textAlignment="Center" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{avg_jam_resolusi} + " jam"]]></textFieldExpression></textField>
         </band>
     </detail>
 

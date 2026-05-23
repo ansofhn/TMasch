@@ -87,7 +87,7 @@
         <band height="22">
             <printWhenExpression><![CDATA[true]]></printWhenExpression>
             <textField><reportElement x="0"   y="0" width="70"  height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{no_tiket}]]></textFieldExpression></textField>
-            <textField isStretchWithOverflow="true"><reportElement x="72"  y="0" width="160" height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
+            <textField><reportElement x="72"  y="0" width="160" height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
             <textField><reportElement x="234" y="0" width="70"  height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{prioritas}]]></textFieldExpression></textField>
             <textField><reportElement x="306" y="0" width="55"  height="22"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{sla_target} + " jam"]]></textFieldExpression></textField>
             <textField><reportElement x="363" y="0" width="65"  height="22"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{aktual_jam} + " jam"]]></textFieldExpression></textField>

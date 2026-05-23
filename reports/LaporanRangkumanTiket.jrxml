@@ -10,6 +10,11 @@
               topMargin="20" bottomMargin="20"
               uuid="a1b2c3d4-0001-0001-0001-000000000001">
 
+    <!-- ── STYLES ── -->
+    <style name="detail_cell">
+        <pen lineWidth="0.5" lineColor="#E2E8F0"/>
+    </style>
+
     <parameter name="filterStatus" class="java.lang.String">
         <defaultValueExpression><![CDATA["Semua"]]></defaultValueExpression>
     </parameter>
@@ -148,9 +153,5 @@
         </band>
     </pageFooter>
 
-    <!-- ── STYLES ── -->
-    <style name="detail_cell" default="true">
-        <pen lineWidth="0.5" lineColor="#E2E8F0"/>
-    </style>
 
 </jasperReport>
