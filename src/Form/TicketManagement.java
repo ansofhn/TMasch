@@ -141,6 +141,7 @@ public class TicketManagement extends javax.swing.JPanel {
             }
             rs.close();
             ps.close();
+            conn.close();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Gagal memuat daftar staf: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -161,6 +162,7 @@ public class TicketManagement extends javax.swing.JPanel {
         }
         rs.close();
         ps.close();
+        conn.close();
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(this, "Gagal memuat daftar prioritas: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -428,61 +430,70 @@ public class TicketManagement extends javax.swing.JPanel {
             }
 
             ps.close();
+            conn.close();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Gagal menugaskan tiket:\n" + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnAssignActionPerformed
 
     private void tblTicketsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTicketsMouseClicked
-        int row = tblTickets.getSelectedRow();
-        if (row != -1) {
-            selectedTicketId = Integer.parseInt(tblTickets.getValueAt(row, 0).toString());
-            txtTicketID.setText(String.valueOf(selectedTicketId));
-            txtCategory.setText(tblTickets.getValueAt(row, 2).toString());
-            
-            // Mengambil info pembuat tiket (Created By) langsung dari database berdasarkan ID Tiket
-            String sql = "SELECT u.username, r.name AS role_nama FROM tickets t " +
-                         "JOIN users u ON t.created_by = u.id " +
-                         "JOIN roles r ON u.role_id = r.id WHERE t.id = ?";
-            try {
-                Connection conn = new koneksi().connect();
-                PreparedStatement ps = conn.prepareStatement(sql);
-                ps.setInt(1, selectedTicketId);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    txtCreatedBy.setText(rs.getString("username"));
-                    txtRole.setText(rs.getString("role_nama"));
-                }
-                rs.close();
-                ps.close();
-            } catch (SQLException e) {
-                System.out.println("Gagal mengambil info detail user: " + e.getMessage());
+    int row = tblTickets.getSelectedRow();
+    if (row != -1) {
+        selectedTicketId = Integer.parseInt(tblTickets.getValueAt(row, 0).toString());
+        txtTicketID.setText(String.valueOf(selectedTicketId));
+        txtCategory.setText(tblTickets.getValueAt(row, 2).toString());
+        
+        // Mengambil info pembuat tiket (Created By) langsung dari database berdasarkan ID Tiket
+        String sql = "SELECT u.username, r.name AS role_nama FROM tickets t " +
+                     "JOIN users u ON t.created_by = u.id " +
+                     "JOIN roles r ON u.role_id = r.id WHERE t.id = ?";
+        try {
+            Connection conn = new koneksi().connect();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, selectedTicketId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                txtCreatedBy.setText(rs.getString("username"));
+                txtRole.setText(rs.getString("role_nama"));
             }
-            
-            // Memasukkan info resolution note ke dalam teks area (khusus role guru/staf)
-            Object noteValue = tblTickets.getValueAt(row, 6);
-            if (noteValue != null && !noteValue.toString().equals("-")) {
-                txtResolutionNote.setText(noteValue.toString());
+            rs.close();
+            ps.close();
+            conn.close(); 
+        } catch (SQLException e) {
+            System.out.println("Gagal mengambil info detail user: " + e.getMessage());
+        }
+        
+        // Memasukkan info resolution note ke dalam teks area
+        Object noteValue = tblTickets.getValueAt(row, 6);
+        if (noteValue != null && !noteValue.toString().equals("-")) {
+            txtResolutionNote.setText(noteValue.toString());
+        } else {
+            txtResolutionNote.setText("");
+        }
+        
+        String statusTiket = tblTickets.getValueAt(row, 4).toString();
+        
+        if (statusTiket.equalsIgnoreCase("Closed")) {
+            // Jika tiket sudah closed, semua tombol dikunci
+            txtResolutionNote.setEnabled(false);
+            btnCloseTicket.setEnabled(false);
+        } else {
+            // Jika tiket masih Open atau In Progress
+            if (userRoleId == 1) {
+                // Admin bisa edit resolution note dan close ticket
+                txtResolutionNote.setEnabled(true);
+                btnCloseTicket.setEnabled(true);
+            } else if (userRoleId == 2) {
+                // Guru/Staff bisa edit resolution note dan close ticket
+                txtResolutionNote.setEnabled(true);
+                btnCloseTicket.setEnabled(true);
             } else {
-                txtResolutionNote.setText("");
-            }
-            
-            // Pengunci otomatis: Jika status tiket di tabel bertuliskan "Closed", kunci tombol aksi
-            String statusTiket = tblTickets.getValueAt(row, 4).toString();
-            if (statusTiket.equalsIgnoreCase("Open")) {
-                txtResolutionNote.setEnabled(true);
-                btnCloseTicket.setEnabled(true);
-            }else if (statusTiket.equalsIgnoreCase("In_Progress")) {
-                txtResolutionNote.setEnabled(true);
-                btnCloseTicket.setEnabled(true);
-            }else if (statusTiket.equalsIgnoreCase("Closed")) {
+                // Siswa atau role lain tidak bisa edit
                 txtResolutionNote.setEnabled(false);
                 btnCloseTicket.setEnabled(false);
-            } else if (userRoleId == 2) {
-                txtResolutionNote.setEnabled(true);
-                btnCloseTicket.setEnabled(true);
             }
         }
+    }
     }//GEN-LAST:event_tblTicketsMouseClicked
 
     private void btnCloseTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseTicketActionPerformed
@@ -513,6 +524,7 @@ public class TicketManagement extends javax.swing.JPanel {
                 loadTicketTable(); 
             }
             ps.close();
+            conn.close();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Gagal menutup tiket:\n" + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -575,6 +587,7 @@ if (selectedTicketId == -1) {
             }
             rs.close();
             ps.close();
+            conn.close();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Gagal memuat detail dari database:\n" + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
