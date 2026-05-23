@@ -322,7 +322,7 @@ private void loadStatistics() {
 
                 if (status.equalsIgnoreCase("Open")) {
                     openCount = jumlah;
-                } else if (status.equalsIgnoreCase("In-Progress") || status.equalsIgnoreCase("In Progress")) {
+                } else if (status.equalsIgnoreCase("In_Progress") || status.equalsIgnoreCase("In Progress")) {
                     inProgressCount = jumlah;
                 } else if (status.equalsIgnoreCase("Closed")) {
                     closedCount = jumlah;
