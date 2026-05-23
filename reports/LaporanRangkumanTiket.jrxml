@@ -22,7 +22,7 @@
     <queryString>
         <![CDATA[
         SELECT
-            t.ticket_number     AS no_tiket,
+            t.id                AS no_tiket,
             t.title             AS judul,
             c.name              AS kategori,
             p.name              AS prioritas,
