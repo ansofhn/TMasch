@@ -31,8 +31,8 @@ public MainDashboard() {
         panelKontenUtama.add(halManagement, "kelola_tiket");
 
         // Panel: laporan
-//        Form.ReportPanel halLaporan = new Form.ReportPanel();
-//        panelKontenUtama.add(halLaporan, "laporan");
+        Form.ReportPanel halLaporan = new Form.ReportPanel();
+        panelKontenUtama.add(halLaporan, "laporan");
 
         // Tampilkan halaman awal
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();

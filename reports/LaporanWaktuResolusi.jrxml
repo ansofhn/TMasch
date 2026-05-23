@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="LaporanWaktuResolusi"
+              pageWidth="842" pageHeight="595"
+              orientation="Landscape"
+              columnWidth="782" leftMargin="30" rightMargin="30"
+              topMargin="20" bottomMargin="20"
+              uuid="a1b2c3d4-0002-0002-0002-000000000002">
+
+    <queryString>
+        <![CDATA[
+        SELECT
+            t.ticket_number                                              AS no_tiket,
+            t.title                                                      AS judul,
+            p.name                                                       AS prioritas,
+            p.sla_hours                                                  AS sla_target,
+            s.name                                                       AS status,
+            cb.full_name                                                 AS dibuat_oleh,
+            COALESCE(ab.full_name, '-')                                  AS ditugaskan,
+            DATE_FORMAT(t.created_at, '%d/%m/%Y %H:%i')                 AS tgl_buat,
+            COALESCE(DATE_FORMAT(t.resolved_at,'%d/%m/%Y %H:%i'), '-')  AS tgl_selesai,
+            COALESCE(ROUND(TIMESTAMPDIFF(MINUTE, t.created_at, t.resolved_at) / 60.0, 1), 0) AS aktual_jam,
+            CASE
+                WHEN t.resolved_at IS NULL THEN 'BELUM SELESAI'
+                WHEN ROUND(TIMESTAMPDIFF(MINUTE,t.created_at,t.resolved_at)/60.0,1) <= p.sla_hours
+                     THEN 'ON TIME'
+                ELSE 'BREACHED'
+            END AS sla_status
+        FROM tickets t
+        JOIN priorities p  ON t.priority_id = p.id
+        JOIN statuses   s  ON t.status_id   = s.id
+        JOIN users     cb  ON t.created_by  = cb.id
+        LEFT JOIN users ab ON t.assigned_to = ab.id
+        ORDER BY t.id DESC
+        ]]>
+    </queryString>
+
+    <field name="no_tiket"    class="java.lang.String"/>
+    <field name="judul"       class="java.lang.String"/>
+    <field name="prioritas"   class="java.lang.String"/>
+    <field name="sla_target"  class="java.lang.Integer"/>
+    <field name="status"      class="java.lang.String"/>
+    <field name="ditugaskan"  class="java.lang.String"/>
+    <field name="tgl_buat"    class="java.lang.String"/>
+    <field name="tgl_selesai" class="java.lang.String"/>
+    <field name="aktual_jam"  class="java.lang.Double"/>
+    <field name="sla_status"  class="java.lang.String"/>
+
+    <!-- Title -->
+    <title>
+        <band height="60">
+            <rectangle><reportElement x="0" y="0" width="782" height="55" backcolor="#1E3A5F" mode="Opaque"/></rectangle>
+            <staticText>
+                <reportElement x="10" y="5" width="762" height="30" forecolor="#FFFFFF"/>
+                <textElement verticalAlignment="Middle"><font fontName="SansSerif" size="16" isBold="true"/></textElement>
+                <text><![CDATA[LAPORAN WAKTU RESOLUSI TIKET — T-Masch]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="10" y="35" width="762" height="18" forecolor="#93C5FD"/>
+                <textElement verticalAlignment="Middle"><font size="10"/></textElement>
+                <text><![CDATA[Mengukur waktu aktual penyelesaian tiket vs target SLA]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- Column Header -->
+    <columnHeader>
+        <band height="24">
+            <rectangle><reportElement x="0" y="0" width="782" height="24" backcolor="#334155" mode="Opaque"/></rectangle>
+            <staticText><reportElement x="0"   y="0" width="70"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[No. Tiket]]></text></staticText>
+            <staticText><reportElement x="72"  y="0" width="160" height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Judul]]></text></staticText>
+            <staticText><reportElement x="234" y="0" width="70"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Prioritas]]></text></staticText>
+            <staticText><reportElement x="306" y="0" width="55"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[SLA (jam)]]></text></staticText>
+            <staticText><reportElement x="363" y="0" width="65"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Aktual (jam)]]></text></staticText>
+            <staticText><reportElement x="430" y="0" width="80"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Status SLA]]></text></staticText>
+            <staticText><reportElement x="512" y="0" width="110" height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Ditugaskan ke]]></text></staticText>
+            <staticText><reportElement x="624" y="0" width="80"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Tgl Buat]]></text></staticText>
+            <staticText><reportElement x="706" y="0" width="76"  height="24" forecolor="#FFFFFF"/><textElement verticalAlignment="Middle"><font size="8" isBold="true"/></textElement><text><![CDATA[Tgl Selesai]]></text></staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detail dengan conditional color untuk SLA -->
+    <detail>
+        <band height="22">
+            <printWhenExpression><![CDATA[true]]></printWhenExpression>
+            <textField><reportElement x="0"   y="0" width="70"  height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{no_tiket}]]></textFieldExpression></textField>
+            <textField isStretchWithOverflow="true"><reportElement x="72"  y="0" width="160" height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{judul}]]></textFieldExpression></textField>
+            <textField><reportElement x="234" y="0" width="70"  height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{prioritas}]]></textFieldExpression></textField>
+            <textField><reportElement x="306" y="0" width="55"  height="22"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{sla_target} + " jam"]]></textFieldExpression></textField>
+            <textField><reportElement x="363" y="0" width="65"  height="22"/><textElement textAlignment="Center"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{aktual_jam} + " jam"]]></textFieldExpression></textField>
+            <!-- SLA Status dengan warna: ON TIME = hijau, BREACHED = merah -->
+            <textField>
+                <reportElement x="430" y="0" width="80" height="22">
+                    <printWhenExpression><![CDATA[$F{sla_status}.equals("ON TIME")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center"><font size="8" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{sla_status}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="430" y="0" width="80" height="22" forecolor="#DC2626">
+                    <printWhenExpression><![CDATA[$F{sla_status}.equals("BREACHED")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center"><font size="8" isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[$F{sla_status}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="430" y="0" width="80" height="22" forecolor="#94A3B8">
+                    <printWhenExpression><![CDATA[$F{sla_status}.equals("BELUM SELESAI")]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center"><font size="8"/></textElement>
+                <textFieldExpression><![CDATA[$F{sla_status}]]></textFieldExpression>
+            </textField>
+            <textField><reportElement x="512" y="0" width="110" height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{ditugaskan}]]></textFieldExpression></textField>
+            <textField><reportElement x="624" y="0" width="80"  height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{tgl_buat}]]></textFieldExpression></textField>
+            <textField><reportElement x="706" y="0" width="76"  height="22"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{tgl_selesai}]]></textFieldExpression></textField>
+        </band>
+    </detail>
+
+    <pageFooter>
+        <band height="20">
+            <staticText><reportElement x="0" y="0" width="500" height="20" forecolor="#94A3B8"/><textElement verticalAlignment="Middle"><font size="8"/></textElement><text><![CDATA[T-Masch — Laporan Waktu Resolusi]]></text></staticText>
+            <textField><reportElement x="682" y="0" width="100" height="20" forecolor="#94A3B8"/><textElement textAlignment="Right" verticalAlignment="Middle"><font size="8"/></textElement><textFieldExpression><![CDATA["Hal. " + $V{PAGE_NUMBER}]]></textFieldExpression></textField>
+        </band>
+    </pageFooter>
+
+</jasperReport>
