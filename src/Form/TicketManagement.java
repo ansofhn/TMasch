@@ -201,7 +201,7 @@ private void searchTickets(String keyword) {
 }
 
 private void sortTickets(String sortBy) {
-    System.out.println("=== SORT TICKETS DIPANGGIL ===");
+    System.out.println("== SORT TICKETS DIPANGGIL ==");
     System.out.println("Sort By Parameter: " + sortBy);
     
     DefaultTableModel model = new DefaultTableModel() {
