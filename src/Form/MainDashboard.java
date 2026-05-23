@@ -53,7 +53,7 @@ public MainDashboard() {
                 case 3 -> "Siswa";
                 default -> "User";
             };
-            lblWelcome.setText("<html>Halo, <b>" + namaUser + "</b><br><small>" + namaRole + "</small></html>");
+            lblWelcome.setText("<html>Halo, <b>" + namaUser + "</b><br><small>Roles anda :" + namaRole + "</small></html>");
     }
 
     /**
@@ -70,21 +70,40 @@ public MainDashboard() {
                btnCreateTickett.setVisible(true);
                btnManageTicket.setVisible(true);
                btnLaporan.setVisible(true);
-           }
+               btnUsers.setVisible(true);
+               btnPriority.setVisible(true);
+               btnCategory.setVisible(true);
+               btnRoles.setVisible(true);
+               btnStatus.setVisible(true);           }
            case 2 -> { // Guru/Staff: tidak bisa lihat laporan
                btnCreateTickett.setVisible(true);
                btnManageTicket.setVisible(true);
                btnLaporan.setVisible(false);
+               btnUsers.setVisible(false);
+               btnPriority.setVisible(false);
+               btnCategory.setVisible(false);
+               btnRoles.setVisible(false);
+               btnStatus.setVisible(false); 
            }
            case 3 -> { // Siswa: hanya buat tiket
                btnCreateTickett.setVisible(true);
                btnManageTicket.setVisible(false);
                btnLaporan.setVisible(false);
+               btnUsers.setVisible(false);
+               btnPriority.setVisible(false);
+               btnCategory.setVisible(false);
+               btnRoles.setVisible(false);
+               btnStatus.setVisible(false);
            }
            default -> { // Role tidak dikenal: sembunyikan semua kecuali create
                btnCreateTickett.setVisible(true);
                btnManageTicket.setVisible(false);
                btnLaporan.setVisible(false);
+               btnUsers.setVisible(false);
+               btnPriority.setVisible(false);
+               btnCategory.setVisible(false);
+               btnRoles.setVisible(false);
+               btnStatus.setVisible(false);               
 
                // Opsional: tampilkan peringatan
                javax.swing.JOptionPane.showMessageDialog(this,
@@ -108,12 +127,18 @@ public MainDashboard() {
         btnManageTicket = new javax.swing.JButton();
         lblWelcome = new javax.swing.JLabel();
         btnLaporan = new javax.swing.JButton();
+        btnUsers = new javax.swing.JButton();
+        btnRoles = new javax.swing.JButton();
+        btnCategory = new javax.swing.JButton();
+        btnStatus = new javax.swing.JButton();
+        btnPriority = new javax.swing.JButton();
         panelKontenUtama = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         panelSidebar.setBackground(new java.awt.Color(102, 102, 102));
-        panelSidebar.setPreferredSize(new java.awt.Dimension(150, 404));
+        panelSidebar.setMaximumSize(new java.awt.Dimension(240, 32767));
+        panelSidebar.setPreferredSize(new java.awt.Dimension(240, 400));
 
         btnCreateTickett.setText("Create Ticket");
         btnCreateTickett.addActionListener(this::btnCreateTickettActionPerformed);
@@ -130,31 +155,75 @@ public MainDashboard() {
         btnLaporan.setText("Laporan");
         btnLaporan.addActionListener(this::btnLaporanActionPerformed);
 
+        btnUsers.setText("Users");
+        btnUsers.addActionListener(this::btnUsersActionPerformed);
+
+        btnRoles.setText("Roles");
+        btnRoles.addActionListener(this::btnRolesActionPerformed);
+
+        btnCategory.setText("Categories");
+        btnCategory.addActionListener(this::btnCategoryActionPerformed);
+
+        btnStatus.setText("Statuses");
+        btnStatus.addActionListener(this::btnStatusActionPerformed);
+
+        btnPriority.setText("Priorities");
+        btnPriority.addActionListener(this::btnPriorityActionPerformed);
+
         javax.swing.GroupLayout panelSidebarLayout = new javax.swing.GroupLayout(panelSidebar);
         panelSidebar.setLayout(panelSidebarLayout);
         panelSidebarLayout.setHorizontalGroup(
             panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelSidebarLayout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnCreateTickett, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnManageTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(btnLaporan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelSidebarLayout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(btnLaporan, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnManageTicket, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                                .addComponent(btnCreateTickett, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSidebarLayout.createSequentialGroup()
+                                    .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(14, 14, 14)))))
+                    .addGroup(panelSidebarLayout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelSidebarLayout.createSequentialGroup()
+                                .addGap(48, 48, 48)
+                                .addComponent(btnUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelSidebarLayout.createSequentialGroup()
+                                .addComponent(btnStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnPriority, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelSidebarLayout.createSequentialGroup()
+                                .addComponent(btnCategory)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnRoles, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
         panelSidebarLayout.setVerticalGroup(
             panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelSidebarLayout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnCreateTickett)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnManageTicket)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnLaporan)
-                .addContainerGap(82, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE)
+                .addComponent(btnUsers)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRoles)
+                    .addComponent(btnCategory))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnStatus)
+                    .addComponent(btnPriority))
+                .addGap(38, 38, 38))
         );
 
         getContentPane().add(panelSidebar, java.awt.BorderLayout.WEST);
@@ -194,6 +263,66 @@ public MainDashboard() {
         cl.show(panelKontenUtama, "laporan");
     }//GEN-LAST:event_btnLaporanActionPerformed
 
+    private void btnCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryActionPerformed
+        if (tmasch.UserSession.getRoleId() != 1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Anda tidak memiliki akses ke menu ini.",
+                "Akses Ditolak", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Form.categories formUser = new Form.categories();
+        formUser.setLocationRelativeTo(null);
+        formUser.setVisible(true);
+    }//GEN-LAST:event_btnCategoryActionPerformed
+
+    private void btnUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsersActionPerformed
+        if (tmasch.UserSession.getRoleId() != 1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Anda tidak memiliki akses ke menu ini.",
+                "Akses Ditolak", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Form.user formUser = new Form.user();
+        formUser.setLocationRelativeTo(null);
+        formUser.setVisible(true);
+    }//GEN-LAST:event_btnUsersActionPerformed
+
+    private void btnRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRolesActionPerformed
+        if (tmasch.UserSession.getRoleId() != 1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Anda tidak memiliki akses ke menu ini.",
+                "Akses Ditolak", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Form.roles formUser = new Form.roles();
+        formUser.setLocationRelativeTo(null);
+        formUser.setVisible(true);
+    }//GEN-LAST:event_btnRolesActionPerformed
+
+    private void btnStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStatusActionPerformed
+        if (tmasch.UserSession.getRoleId() != 1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Anda tidak memiliki akses ke menu ini.",
+                "Akses Ditolak", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Form.statuses formUser = new Form.statuses();
+        formUser.setLocationRelativeTo(null);
+        formUser.setVisible(true);
+    }//GEN-LAST:event_btnStatusActionPerformed
+
+    private void btnPriorityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPriorityActionPerformed
+        if (tmasch.UserSession.getRoleId() != 1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Anda tidak memiliki akses ke menu ini.",
+                "Akses Ditolak", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Form.priorities formUser = new Form.priorities();
+        formUser.setLocationRelativeTo(null);
+        formUser.setVisible(true);
+    }//GEN-LAST:event_btnPriorityActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -220,9 +349,14 @@ public MainDashboard() {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCategory;
     private javax.swing.JButton btnCreateTickett;
     private javax.swing.JButton btnLaporan;
     private javax.swing.JButton btnManageTicket;
+    private javax.swing.JButton btnPriority;
+    private javax.swing.JButton btnRoles;
+    private javax.swing.JButton btnStatus;
+    private javax.swing.JButton btnUsers;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JPanel panelKontenUtama;
     private javax.swing.JPanel panelSidebar;

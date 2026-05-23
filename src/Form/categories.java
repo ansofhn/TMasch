@@ -30,7 +30,8 @@ public class categories extends javax.swing.JFrame {
         initComponents();
         kosong();
         aktif();
-        datatable();
+        datatable();        
+        this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     protected void aktif(){

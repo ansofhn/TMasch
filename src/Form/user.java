@@ -28,6 +28,7 @@ public class user extends javax.swing.JFrame {
         kosong();
         aktif();
         datatable();
+        this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     protected void aktif(){
