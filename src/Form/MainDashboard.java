@@ -20,6 +20,8 @@ public MainDashboard() {
         this.setSize(900, 600);
         this.setLocationRelativeTo(null);
 
+        Form.FormTicketList halTicketList = new Form.FormTicketList();
+        panelKontenUtama.add(halTicketList, "daftar_tiket");
         // Panel: buat tiket
         Form.CreateTicketPanel halCreateTicket = new Form.CreateTicketPanel();
         panelKontenUtama.add(halCreateTicket, "buka_tiket");
@@ -38,7 +40,7 @@ public MainDashboard() {
 
         // Tampilkan halaman awal
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
-        cl.show(panelKontenUtama, "buka_tiket");
+        cl.show(panelKontenUtama, "daftar_tiket");
 
         tampilkanSambutanUser();
     }
@@ -67,7 +69,8 @@ public MainDashboard() {
 
        switch (roleId) {
            case 1 -> { // Admin: akses penuh
-               btnCreateTickett.setVisible(true);
+               btnTicketList.setVisible(true);
+               btnCreateTicket.setVisible(true);
                btnManageTicket.setVisible(true);
                btnLaporan.setVisible(true);
                btnUsers.setVisible(true);
@@ -76,7 +79,8 @@ public MainDashboard() {
                btnRoles.setVisible(true);
                btnStatus.setVisible(true);           }
            case 2 -> { // Guru/Staff: tidak bisa lihat laporan
-               btnCreateTickett.setVisible(true);
+               btnTicketList.setVisible(true);
+               btnCreateTicket.setVisible(true);
                btnManageTicket.setVisible(true);
                btnLaporan.setVisible(false);
                btnUsers.setVisible(false);
@@ -86,7 +90,8 @@ public MainDashboard() {
                btnStatus.setVisible(false); 
            }
            case 3 -> { // Siswa: hanya buat tiket
-               btnCreateTickett.setVisible(true);
+               btnTicketList.setVisible(true);
+               btnCreateTicket.setVisible(true);
                btnManageTicket.setVisible(false);
                btnLaporan.setVisible(false);
                btnUsers.setVisible(false);
@@ -96,7 +101,8 @@ public MainDashboard() {
                btnStatus.setVisible(false);
            }
            default -> { // Role tidak dikenal: sembunyikan semua kecuali create
-               btnCreateTickett.setVisible(true);
+               btnTicketList.setVisible(true);
+               btnCreateTicket.setVisible(true);
                btnManageTicket.setVisible(false);
                btnLaporan.setVisible(false);
                btnUsers.setVisible(false);
@@ -123,7 +129,7 @@ public MainDashboard() {
     private void initComponents() {
 
         panelSidebar = new javax.swing.JPanel();
-        btnCreateTickett = new javax.swing.JButton();
+        btnCreateTicket = new javax.swing.JButton();
         btnManageTicket = new javax.swing.JButton();
         lblWelcome = new javax.swing.JLabel();
         btnLaporan = new javax.swing.JButton();
@@ -132,6 +138,7 @@ public MainDashboard() {
         btnCategory = new javax.swing.JButton();
         btnStatus = new javax.swing.JButton();
         btnPriority = new javax.swing.JButton();
+        btnTicketList = new javax.swing.JButton();
         panelKontenUtama = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -140,35 +147,42 @@ public MainDashboard() {
         panelSidebar.setMaximumSize(new java.awt.Dimension(240, 32767));
         panelSidebar.setPreferredSize(new java.awt.Dimension(240, 400));
 
-        btnCreateTickett.setText("Create Ticket");
-        btnCreateTickett.addActionListener(this::btnCreateTickettActionPerformed);
+        btnCreateTicket.setText("Create Ticket");
+        btnCreateTicket.addActionListener(this::btnCreateTicketActionPerformed);
 
         btnManageTicket.setText("Manage Ticket");
         btnManageTicket.addActionListener(this::btnManageTicketActionPerformed);
 
         lblWelcome.setForeground(new java.awt.Color(255, 255, 255));
-        lblWelcome.setText("aiwodhawubfoawubfouawbfo");
+        lblWelcome.setText("Welcome and Role");
         lblWelcome.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         lblWelcome.setMaximumSize(new java.awt.Dimension(108, 90));
         lblWelcome.setMinimumSize(new java.awt.Dimension(100, 16));
 
-        btnLaporan.setText("Laporan");
+        btnLaporan.setText("Report");
         btnLaporan.addActionListener(this::btnLaporanActionPerformed);
 
         btnUsers.setText("Users");
+        btnUsers.setMinimumSize(new java.awt.Dimension(87, 23));
         btnUsers.addActionListener(this::btnUsersActionPerformed);
 
         btnRoles.setText("Roles");
+        btnRoles.setPreferredSize(new java.awt.Dimension(87, 23));
         btnRoles.addActionListener(this::btnRolesActionPerformed);
 
         btnCategory.setText("Categories");
         btnCategory.addActionListener(this::btnCategoryActionPerformed);
 
         btnStatus.setText("Statuses");
+        btnStatus.setPreferredSize(new java.awt.Dimension(87, 23));
         btnStatus.addActionListener(this::btnStatusActionPerformed);
 
         btnPriority.setText("Priorities");
+        btnPriority.setPreferredSize(new java.awt.Dimension(87, 23));
         btnPriority.addActionListener(this::btnPriorityActionPerformed);
+
+        btnTicketList.setText("Ticket List");
+        btnTicketList.addActionListener(this::btnTicketListActionPerformed);
 
         javax.swing.GroupLayout panelSidebarLayout = new javax.swing.GroupLayout(panelSidebar);
         panelSidebar.setLayout(panelSidebarLayout);
@@ -182,10 +196,11 @@ public MainDashboard() {
                             .addComponent(btnLaporan, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(btnManageTicket, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                                .addComponent(btnCreateTickett, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnCreateTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSidebarLayout.createSequentialGroup()
                                     .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(14, 14, 14)))))
+                                    .addGap(14, 14, 14))
+                                .addComponent(btnTicketList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(panelSidebarLayout.createSequentialGroup()
                         .addGap(21, 21, 21)
                         .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -202,29 +217,36 @@ public MainDashboard() {
                                 .addComponent(btnRoles, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(33, Short.MAX_VALUE))
         );
+
+        panelSidebarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCategory, btnPriority, btnRoles, btnStatus});
+
         panelSidebarLayout.setVerticalGroup(
             panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelSidebarLayout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCreateTickett)
+                .addComponent(btnTicketList)
+                .addGap(9, 9, 9)
+                .addComponent(btnCreateTicket)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnManageTicket)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnLaporan)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 155, Short.MAX_VALUE)
-                .addComponent(btnUsers)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
+                .addComponent(btnUsers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnRoles)
-                    .addComponent(btnCategory))
+                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnCategory)
+                    .addComponent(btnRoles, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnStatus)
-                    .addComponent(btnPriority))
+                .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPriority, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(38, 38, 38))
         );
+
+        panelSidebarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCategory, btnPriority, btnRoles, btnStatus});
 
         getContentPane().add(panelSidebar, java.awt.BorderLayout.WEST);
 
@@ -235,10 +257,10 @@ public MainDashboard() {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCreateTickettActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateTickettActionPerformed
+    private void btnCreateTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateTicketActionPerformed
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
         cl.show(panelKontenUtama, "buka_tiket");
-    }//GEN-LAST:event_btnCreateTickettActionPerformed
+    }//GEN-LAST:event_btnCreateTicketActionPerformed
 
     private void btnManageTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageTicketActionPerformed
         int roleId = tmasch.UserSession.getRoleId();
@@ -323,6 +345,11 @@ public MainDashboard() {
         formUser.setVisible(true);
     }//GEN-LAST:event_btnPriorityActionPerformed
 
+    private void btnTicketListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTicketListActionPerformed
+        java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
+        cl.show(panelKontenUtama, "daftar_tiket");
+    }//GEN-LAST:event_btnTicketListActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -350,12 +377,13 @@ public MainDashboard() {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCategory;
-    private javax.swing.JButton btnCreateTickett;
+    private javax.swing.JButton btnCreateTicket;
     private javax.swing.JButton btnLaporan;
     private javax.swing.JButton btnManageTicket;
     private javax.swing.JButton btnPriority;
     private javax.swing.JButton btnRoles;
     private javax.swing.JButton btnStatus;
+    private javax.swing.JButton btnTicketList;
     private javax.swing.JButton btnUsers;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JPanel panelKontenUtama;

@@ -22,6 +22,7 @@ public class LoginForm extends javax.swing.JFrame {
      */
     public LoginForm() {
         initComponents();
+        this.getRootPane().setDefaultButton(btnLogin);
         this.setLocationRelativeTo(null);
     }
 
@@ -77,6 +78,12 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel2.setText("<html><center>T-Masch <br>(Ticketing Management System <br>Administration School)</center></html>");
 
         jLabel3.setText("Password");
+
+        txtPassword.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtPasswordKeyPressed(evt);
+            }
+        });
 
         btnLogin.setText("Login");
         btnLogin.addActionListener(this::btnLoginActionPerformed);
@@ -234,6 +241,10 @@ public class LoginForm extends javax.swing.JFrame {
         int y = evt.getYOnScreen();
         this.setLocation(x - xx, y - xy);
     }//GEN-LAST:event_InsideJpanelMouseDragged
+
+    private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPasswordKeyPressed
 
     /**
      * @param args the command line arguments
