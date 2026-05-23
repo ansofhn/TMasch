@@ -40,22 +40,21 @@ public class TicketManagement extends javax.swing.JPanel {
     }
     
     private void aturHakAksesKomponen() {
-        if (userRoleId == 1) {
-            // Hak Akses ADMIN (role_id = 1)
-            cmbAssignTo.setEnabled(true);
-            cmbPriority.setEnabled(true);
-            btnAssign.setEnabled(true);
-            txtResolutionNote.setEnabled(true);
-            btnCloseTicket.setEnabled(true);
+          if (userRoleId == 1) {
+            // Hak Akses ADMIN: Dikunci dulu sebelum pilih tiket
+            cmbAssignTo.setEnabled(false);  
+            cmbPriority.setEnabled(false);  
+            btnAssign.setEnabled(false);
+            txtResolutionNote.setEnabled(false);
+            btnCloseTicket.setEnabled(false);
         } else if (userRoleId == 2) {
-            // Hak Akses GURU / STAFF (role_id = 2)
+            // Hak Akses GURU: Selamanya dikunci untuk combo box ini
             cmbAssignTo.setEnabled(false);
             cmbPriority.setEnabled(false);
             btnAssign.setEnabled(false);
-            txtResolutionNote.setEnabled(true);
-            btnCloseTicket.setEnabled(true);
+            txtResolutionNote.setEnabled(false); 
+            btnCloseTicket.setEnabled(false);   
         } else {
-            // Opsi Pengaman jika Siswa (role_id = 3) atau orang lain tersasar ke panel ini
             cmbAssignTo.setEnabled(false);
             cmbPriority.setEnabled(false);
             btnAssign.setEnabled(false);
@@ -126,6 +125,184 @@ public class TicketManagement extends javax.swing.JPanel {
         JOptionPane.showMessageDialog(this, "Gagal memuat tabel tiket: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+    
+private void searchTickets(String keyword) {
+    DefaultTableModel model = new DefaultTableModel() {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+
+    model.addColumn("Ticket ID");
+    model.addColumn("Subject");
+    model.addColumn("Category");
+    model.addColumn("Priority");
+    model.addColumn("Status");
+    model.addColumn("Assigned To");
+    model.addColumn("Resolution Note");
+
+    String sql = "SELECT t.id, t.title, c.name AS nama_kategori, p.name AS nama_prioritas, s.name AS nama_status, " +
+                 "u.full_name AS nama_staf, t.resolution_note " +
+                 "FROM tickets t " +
+                 "JOIN categories c ON t.category_id = c.id " +
+                 "LEFT JOIN priorities p ON t.priority_id = p.id " +
+                 "JOIN statuses s ON t.status_id = s.id " +
+                 "LEFT JOIN users u ON t.assigned_to = u.id " +
+                 "WHERE (t.id LIKE ? OR t.title LIKE ?) ";
+
+    // Tambahkan filter role jika guru
+    if (userRoleId == 2) {
+        sql += "AND t.assigned_to = ? ";
+    }
+    
+    sql += "ORDER BY t.id DESC";
+
+    try {
+        Connection conn = new koneksi().connect(); 
+        PreparedStatement ps = conn.prepareStatement(sql);
+        
+        String searchPattern = "%" + keyword + "%";
+        ps.setString(1, searchPattern);
+        ps.setString(2, searchPattern);
+        
+        if (userRoleId == 2) {
+            ps.setInt(3, userLoggedInId);
+        }
+        
+        ResultSet rs = ps.executeQuery();
+
+        int rowCount = 0;
+        while(rs.next()) {
+            rowCount++;
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("title"),
+                rs.getString("nama_kategori"),
+                rs.getString("nama_prioritas") != null ? rs.getString("nama_prioritas") : "Not Set",
+                rs.getString("nama_status"),
+                rs.getString("nama_staf") != null ? rs.getString("nama_staf") : "Not Assigned",
+                rs.getString("resolution_note") != null ? rs.getString("resolution_note") : "-"
+            });
+        }
+        
+        tblTickets.setModel(model);
+        
+        if (rowCount == 0) {
+            JOptionPane.showMessageDialog(this, "Tidak ditemukan tiket dengan kata kunci: " + keyword, "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
+        
+        rs.close();
+        ps.close();
+        conn.close();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal mencari tiket: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+private void sortTickets(String sortBy) {
+    System.out.println("=== SORT TICKETS DIPANGGIL ===");
+    System.out.println("Sort By Parameter: " + sortBy);
+    
+    DefaultTableModel model = new DefaultTableModel() {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+
+    model.addColumn("Ticket ID");
+    model.addColumn("Subject");
+    model.addColumn("Category");
+    model.addColumn("Priority");
+    model.addColumn("Status");
+    model.addColumn("Assigned To");
+    model.addColumn("Resolution Note");
+
+    String orderByClause = "";
+    
+    switch (sortBy) {
+        case "Status":
+            orderByClause = "ORDER BY t.status_id ASC, t.id DESC";
+            System.out.println("Sort by Status dipilih");
+            break;
+        case "Priority":
+            orderByClause = "ORDER BY CASE " +
+                           "WHEN p.name = 'High' THEN 1 " +
+                           "WHEN p.name = 'Medium' THEN 2 " +
+                           "WHEN p.name = 'Low' THEN 3 " +
+                           "ELSE 4 END, t.id DESC";
+            System.out.println("Sort by Priority dipilih");
+            break;
+        case "Category":
+            orderByClause = "ORDER BY c.name ASC, t.id DESC";
+            System.out.println("Sort by Category dipilih");
+            break;
+        default:
+            orderByClause = "ORDER BY t.id DESC";
+            System.out.println("Default sorting dipilih");
+    }
+
+    String sql = "SELECT t.id, t.title, c.name AS nama_kategori, p.name AS nama_prioritas, s.name AS nama_status, " +
+                 "u.full_name AS nama_staf, t.resolution_note, t.status_id " + // ✅ TAMBAHKAN status_id untuk debug
+                 "FROM tickets t " +
+                 "JOIN categories c ON t.category_id = c.id " +
+                 "LEFT JOIN priorities p ON t.priority_id = p.id " +
+                 "JOIN statuses s ON t.status_id = s.id " +
+                 "LEFT JOIN users u ON t.assigned_to = u.id ";
+
+    if (userRoleId == 2) {
+        sql += "WHERE t.assigned_to = ? ";
+    }
+    
+    sql += orderByClause;
+    
+    System.out.println("SQL Query: " + sql);
+
+    try {
+        Connection conn = new koneksi().connect(); 
+        PreparedStatement ps = conn.prepareStatement(sql);
+        
+        if (userRoleId == 2) {
+            ps.setInt(1, userLoggedInId);
+        }
+        
+        ResultSet rs = ps.executeQuery();
+
+        int rowNum = 0;
+        while(rs.next()) {
+            rowNum++;
+            int ticketId = rs.getInt("id");
+            int statusId = rs.getInt("status_id");
+            String statusName = rs.getString("nama_status");
+            
+            // ✅ DEBUG: Print urutan data
+            System.out.println("Row " + rowNum + " -> Ticket ID: " + ticketId + 
+                             ", Status ID: " + statusId + ", Status Name: " + statusName);
+            
+            model.addRow(new Object[]{
+                ticketId,
+                rs.getString("title"),
+                rs.getString("nama_kategori"),
+                rs.getString("nama_prioritas") != null ? rs.getString("nama_prioritas") : "Not Set",
+                statusName,
+                rs.getString("nama_staf") != null ? rs.getString("nama_staf") : "Not Assigned",
+                rs.getString("resolution_note") != null ? rs.getString("resolution_note") : "-"
+            });
+        }
+        
+        System.out.println("Total rows loaded: " + rowNum);
+        
+        tblTickets.setModel(model);
+        rs.close();
+        ps.close();
+        conn.close();
+    } catch (SQLException e) {
+        System.err.println("SQL Error: " + e.getMessage());
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Gagal mengurutkan tiket: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
     private void loadStaffCombo() {
         cmbAssignTo.removeAllItems();
         cmbAssignTo.addItem("-- Pilih Guru/Staff --");
@@ -183,6 +360,11 @@ public class TicketManagement extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblTickets = new javax.swing.JTable();
         btnTicketDetails = new javax.swing.JButton();
+        btnSearch = new javax.swing.JButton();
+        txtSearch = new javax.swing.JTextField();
+        cmbSortBy = new javax.swing.JComboBox<>();
+        jLabel9 = new javax.swing.JLabel();
+        btnReset = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -228,6 +410,19 @@ public class TicketManagement extends javax.swing.JPanel {
         btnTicketDetails.setText("Ticket Details");
         btnTicketDetails.addActionListener(this::btnTicketDetailsActionPerformed);
 
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(this::btnSearchActionPerformed);
+
+        txtSearch.setToolTipText("");
+
+        cmbSortBy.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Default", "Status", "Priority", "Category" }));
+        cmbSortBy.addActionListener(this::cmbSortByActionPerformed);
+
+        jLabel9.setText("Sort By :");
+
+        btnReset.setText("Reset");
+        btnReset.addActionListener(this::btnResetActionPerformed);
+
         javax.swing.GroupLayout jPanelTableDataLayout = new javax.swing.GroupLayout(jPanelTableData);
         jPanelTableData.setLayout(jPanelTableDataLayout);
         jPanelTableDataLayout.setHorizontalGroup(
@@ -235,9 +430,19 @@ public class TicketManagement extends javax.swing.JPanel {
             .addGroup(jPanelTableDataLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelTableDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
                     .addGroup(jPanelTableDataLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(6, 6, 6)
+                        .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnSearch)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbSortBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnTicketDetails)))
                 .addContainerGap())
         );
@@ -245,7 +450,14 @@ public class TicketManagement extends javax.swing.JPanel {
             jPanelTableDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelTableDataLayout.createSequentialGroup()
                 .addContainerGap(7, Short.MAX_VALUE)
-                .addComponent(btnTicketDetails)
+                .addGroup(jPanelTableDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnTicketDetails)
+                    .addGroup(jPanelTableDataLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cmbSortBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel9)
+                        .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -352,9 +564,7 @@ public class TicketManagement extends javax.swing.JPanel {
                             .addComponent(cmbPriority, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(34, 34, 34))
+                            .addComponent(jLabel8)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -418,15 +628,16 @@ public class TicketManagement extends javax.swing.JPanel {
 
                 // 7. Refresh tabel agar status terupdate di layar GUI
                 loadTicketTable(); 
-
                 // Bersihkan textfield detail setelah assign selesai
                 txtTicketID.setText("");
                 txtCategory.setText("");
                 txtCreatedBy.setText("");
                 txtRole.setText("");
+                txtResolutionNote.setText("");
                 cmbAssignTo.setSelectedIndex(0);
-                cmbPriority.setSelectedIndex(0);
+                cmbPriority.setSelectedIndex(0);                
                 selectedTicketId = -1; // Reset selection ID
+                aturHakAksesKomponen();
             }
 
             ps.close();
@@ -437,63 +648,100 @@ public class TicketManagement extends javax.swing.JPanel {
     }//GEN-LAST:event_btnAssignActionPerformed
 
     private void tblTicketsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTicketsMouseClicked
-    int row = tblTickets.getSelectedRow();
-    if (row != -1) {
-        selectedTicketId = Integer.parseInt(tblTickets.getValueAt(row, 0).toString());
-        txtTicketID.setText(String.valueOf(selectedTicketId));
-        txtCategory.setText(tblTickets.getValueAt(row, 2).toString());
-        
-        // Mengambil info pembuat tiket (Created By) langsung dari database berdasarkan ID Tiket
-        String sql = "SELECT u.username, r.name AS role_nama FROM tickets t " +
-                     "JOIN users u ON t.created_by = u.id " +
-                     "JOIN roles r ON u.role_id = r.id WHERE t.id = ?";
-        try {
-            Connection conn = new koneksi().connect();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, selectedTicketId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                txtCreatedBy.setText(rs.getString("username"));
-                txtRole.setText(rs.getString("role_nama"));
+        int row = tblTickets.getSelectedRow();
+        if (row != -1) {
+            selectedTicketId = Integer.parseInt(tblTickets.getValueAt(row, 0).toString());
+            txtTicketID.setText(String.valueOf(selectedTicketId));
+            txtCategory.setText(tblTickets.getValueAt(row, 2).toString());
+            
+            // 1. Tarik info detail tiket dari DB
+            String sql = "SELECT u1.username, r.name AS role_nama, t.assigned_to, t.priority_id, s.name AS status_nama " +
+                         "FROM tickets t " +
+                         "JOIN users u1 ON t.created_by = u1.id " +
+                         "JOIN roles r ON u1.role_id = r.id " +
+                         "JOIN statuses s ON t.status_id = s.id " +
+                         "WHERE t.id = ?";
+            try {
+                Connection conn = new koneksi().connect();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, selectedTicketId);
+                ResultSet rs = ps.executeQuery();
+                
+                if (rs.next()) {
+                    txtCreatedBy.setText(rs.getString("username"));
+                    txtRole.setText(rs.getString("role_nama"));
+                    
+                    int assignedToId = rs.getInt("assigned_to");
+                    int priorityId = rs.getInt("priority_id");
+                    String statusTiket = rs.getString("status_nama");
+
+                    // 2. Set cmbAssignTo otomatis berdasarkan ID dari DB
+                    if (assignedToId == 0) {
+                        cmbAssignTo.setSelectedIndex(0); 
+                    } else {
+                        for (int i = 0; i < cmbAssignTo.getItemCount(); i++) {
+                            String item = cmbAssignTo.getItemAt(i);
+                            if (item.startsWith(assignedToId + " - ")) {
+                                cmbAssignTo.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+                    }
+
+                    // 3. Set cmbPriority otomatis berdasarkan ID dari DB
+                    if (priorityId == 0) {
+                        cmbPriority.setSelectedIndex(0); 
+                    } else {
+                        for (int i = 0; i < cmbPriority.getItemCount(); i++) {
+                            String item = cmbPriority.getItemAt(i);
+                            if (item.startsWith(priorityId + " - ")) {
+                                cmbPriority.setSelectedIndex(i);
+                                break;
+                            }
+                        }
+                    }
+
+                    // 4. ATUR HAK AKSES KOMPONEN SETELAH TIKET DIPILIH
+                    if (userRoleId == 1) { 
+                        // JIKA ADMIN
+                        if (statusTiket.equalsIgnoreCase("Closed")) {
+                            cmbAssignTo.setEnabled(false);
+                            cmbPriority.setEnabled(false);
+                            btnAssign.setEnabled(false);
+                        } else {
+                            cmbAssignTo.setEnabled(true);  // Kunci TERBUKA
+                            cmbPriority.setEnabled(true);  // Kunci TERBUKA
+                            btnAssign.setEnabled(true);
+                        }
+                        txtResolutionNote.setEnabled(false);
+                        btnCloseTicket.setEnabled(false);
+                        
+                    } else if (userRoleId == 2) { 
+                        // JIKA GURU
+                        cmbAssignTo.setEnabled(false);
+                        cmbPriority.setEnabled(false);
+                        btnAssign.setEnabled(false);
+                        
+                        if (statusTiket.equalsIgnoreCase("Closed")) {
+                            txtResolutionNote.setEnabled(false);
+                            btnCloseTicket.setEnabled(false);
+                        } else {
+                            txtResolutionNote.setEnabled(true);
+                            btnCloseTicket.setEnabled(true);
+                        }
+                    }
+                }
+                rs.close();
+                ps.close();
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println("Gagal mengambil info detail user: " + e.getMessage());
             }
-            rs.close();
-            ps.close();
-            conn.close(); 
-        } catch (SQLException e) {
-            System.out.println("Gagal mengambil info detail user: " + e.getMessage());
+            
+            // Set info resolution note
+            Object noteValue = tblTickets.getValueAt(row, 6);
+            txtResolutionNote.setText((noteValue != null && !noteValue.toString().equals("-")) ? noteValue.toString() : "");
         }
-        
-        // Memasukkan info resolution note ke dalam teks area
-        Object noteValue = tblTickets.getValueAt(row, 6);
-        if (noteValue != null && !noteValue.toString().equals("-")) {
-            txtResolutionNote.setText(noteValue.toString());
-        } else {
-            txtResolutionNote.setText("");
-        }
-        
-        String statusTiket = tblTickets.getValueAt(row, 4).toString();
-        
-        if (statusTiket.equalsIgnoreCase("Closed")) {
-            // Jika tiket sudah closed, semua tombol dikunci
-            txtResolutionNote.setEnabled(false);
-            btnCloseTicket.setEnabled(false);
-        } else {
-            // Jika tiket masih Open atau In Progress
-            if (userRoleId == 1) {
-                // Admin bisa edit resolution note dan close ticket
-                txtResolutionNote.setEnabled(true);
-                btnCloseTicket.setEnabled(true);
-            } else if (userRoleId == 2) {
-                // Guru/Staff bisa edit resolution note dan close ticket
-                txtResolutionNote.setEnabled(true);
-                btnCloseTicket.setEnabled(true);
-            } else {
-                // Siswa atau role lain tidak bisa edit
-                txtResolutionNote.setEnabled(false);
-                btnCloseTicket.setEnabled(false);
-            }
-        }
-    }
     }//GEN-LAST:event_tblTicketsMouseClicked
 
     private void btnCloseTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseTicketActionPerformed
@@ -593,13 +841,42 @@ if (selectedTicketId == -1) {
         }
     }//GEN-LAST:event_btnTicketDetailsActionPerformed
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+    String keyword = txtSearch.getText().trim();
+    
+    if (keyword.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Masukkan kata kunci pencarian (ID atau Subject)!", "Validasi", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    searchTickets(keyword);
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+    txtSearch.setText("");
+    cmbSortBy.setSelectedIndex(0);
+    loadTicketTable();
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void cmbSortByActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbSortByActionPerformed
+    if (cmbSortBy.getSelectedIndex() == 0) {
+        return; // Tidak melakukan apa-apa jika pilih "-- Sort By --"
+    }
+    
+    String sortOption = cmbSortBy.getSelectedItem().toString();
+    sortTickets(sortOption);
+    }//GEN-LAST:event_cmbSortByActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAssign;
     private javax.swing.JButton btnCloseTicket;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnTicketDetails;
     private javax.swing.JComboBox<String> cmbAssignTo;
     private javax.swing.JComboBox<String> cmbPriority;
+    private javax.swing.JComboBox<String> cmbSortBy;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -608,6 +885,7 @@ if (selectedTicketId == -1) {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanelTableData;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -616,6 +894,7 @@ if (selectedTicketId == -1) {
     private javax.swing.JTextField txtCreatedBy;
     private javax.swing.JTextArea txtResolutionNote;
     private javax.swing.JTextField txtRole;
+    private javax.swing.JTextField txtSearch;
     private javax.swing.JTextField txtTicketID;
     // End of variables declaration//GEN-END:variables
 }
