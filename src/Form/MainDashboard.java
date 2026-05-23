@@ -17,28 +17,27 @@ public class MainDashboard extends javax.swing.JFrame {
      */
 public MainDashboard() {
         initComponents();
-        this.setSize(800, 600);
+        this.setSize(900, 600);
         this.setLocationRelativeTo(null);
-        int currentRoleId = tmasch.UserSession.getRoleId();
-        int currentUserId = tmasch.UserSession.getId();
-        
-        // 1. Panggil file CreateTicketPanel yang sudah ada
+
+        // Panel: buat tiket
         Form.CreateTicketPanel halCreateTicket = new Form.CreateTicketPanel();
         panelKontenUtama.add(halCreateTicket, "buka_tiket");
 
-        // ======= TAMBAHKAN KODE BARU INI =======
-        // 2. Panggil file TicketManagementPanel yang baru dibuat
-        // Parameter pertama: role_id (1 = Admin, 2 = Guru). Parameter kedua: user_id login.
-        // Untuk testing awal, kita set sebagai Admin (1, 1) terlebih dahulu.
-        Form.TicketManagement halManagement = new Form.TicketManagement(1, 1);
-        
-        // Masukkan ke dalam panelKontenUtama dan beri nama identitas "kelola_tiket"
+        // Panel: kelola tiket
+        Form.TicketManagement halManagement = new Form.TicketManagement(
+            tmasch.UserSession.getRoleId(),
+            tmasch.UserSession.getId());
         panelKontenUtama.add(halManagement, "kelola_tiket");
-        // =======================================
 
-        // 3. Langsung tampilkan halaman tiket ini sebagai halaman utama saat Dashboard dibuka
+        // Panel: laporan
+//        Form.ReportPanel halLaporan = new Form.ReportPanel();
+//        panelKontenUtama.add(halLaporan, "laporan");
+
+        // Tampilkan halaman awal
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
         cl.show(panelKontenUtama, "buka_tiket");
+
         tampilkanSambutanUser();
     }
 
@@ -46,21 +45,13 @@ private void tampilkanSambutanUser() {
     // 1. Ambil data nama lengkap dan nama role dari UserSession
     String namaUser = tmasch.UserSession.getFullName();
     int roleId = tmasch.UserSession.getRoleId();
-    String namaRole = "";
-
-    // 2. Konversi role_id angka menjadi teks yang mudah dibaca
-    if (roleId == 1) {
-        namaRole = "Admin";
-    } else if (roleId == 2) {
-        namaRole = "Guru / Staff";
-    } else if (roleId == 3) {
-        namaRole = "Siswa";
-    } else {
-        namaRole = "Tidak Diketahui";
-    }
-
-    // 3. Set teks ke JLabel yang sudah kita buat tadi
-    lblWelcome.setText("<html>Halo, Selamat Datang <b>" + namaUser + "</b>!<br>Role anda adalah: <u>" + namaRole + "</u></html>");
+    String namaRole = switch (roleId) {
+            case 1 -> "Admin";
+            case 2 -> "Guru / Staff";
+            case 3 -> "Siswa";
+            default -> "User";
+        };
+        lblWelcome.setText("<html>Halo, <b>" + namaUser + "</b><br><small>" + namaRole + "</small></html>");
 }
 
     /**
@@ -76,6 +67,7 @@ private void tampilkanSambutanUser() {
         btnCreateTickett = new javax.swing.JButton();
         btnManageTicket = new javax.swing.JButton();
         lblWelcome = new javax.swing.JLabel();
+        btnLaporan = new javax.swing.JButton();
         panelKontenUtama = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -95,6 +87,9 @@ private void tampilkanSambutanUser() {
         lblWelcome.setMaximumSize(new java.awt.Dimension(108, 90));
         lblWelcome.setMinimumSize(new java.awt.Dimension(100, 16));
 
+        btnLaporan.setText("Laporan");
+        btnLaporan.addActionListener(this::btnLaporanActionPerformed);
+
         javax.swing.GroupLayout panelSidebarLayout = new javax.swing.GroupLayout(panelSidebar);
         panelSidebar.setLayout(panelSidebarLayout);
         panelSidebarLayout.setHorizontalGroup(
@@ -104,7 +99,8 @@ private void tampilkanSambutanUser() {
                 .addGroup(panelSidebarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnCreateTickett, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnManageTicket, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(lblWelcome, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btnLaporan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(16, Short.MAX_VALUE))
         );
         panelSidebarLayout.setVerticalGroup(
@@ -116,7 +112,9 @@ private void tampilkanSambutanUser() {
                 .addComponent(btnCreateTickett)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnManageTicket)
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnLaporan)
+                .addContainerGap(82, Short.MAX_VALUE))
         );
 
         getContentPane().add(panelSidebar, java.awt.BorderLayout.WEST);
@@ -137,6 +135,11 @@ private void tampilkanSambutanUser() {
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
         cl.show(panelKontenUtama, "kelola_tiket");
     }//GEN-LAST:event_btnManageTicketActionPerformed
+
+    private void btnLaporanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLaporanActionPerformed
+        java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
+        cl.show(panelKontenUtama, "laporan");
+    }//GEN-LAST:event_btnLaporanActionPerformed
 
     /**
      * @param args the command line arguments
@@ -165,6 +168,7 @@ private void tampilkanSambutanUser() {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateTickett;
+    private javax.swing.JButton btnLaporan;
     private javax.swing.JButton btnManageTicket;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JPanel panelKontenUtama;
