@@ -10,11 +10,21 @@ package tmasch;
  */
 public class TMasch {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        // TODO code application logic here
+        // Set Nimbus Look and Feel
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info :
+                    javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception ignored) {}
+
+        // Launch Login
+        java.awt.EventQueue.invokeLater(() ->
+            new Form.LoginForm().setVisible(true));
     }
     
 }
