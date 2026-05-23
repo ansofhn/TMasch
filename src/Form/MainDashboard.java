@@ -33,6 +33,8 @@ public MainDashboard() {
         // Panel: laporan
         Form.ReportPanel halLaporan = new Form.ReportPanel();
         panelKontenUtama.add(halLaporan, "laporan");
+        
+        aturMenuBerdasarkanRole();
 
         // Tampilkan halaman awal
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
@@ -41,18 +43,56 @@ public MainDashboard() {
         tampilkanSambutanUser();
     }
 
-private void tampilkanSambutanUser() {
-    // 1. Ambil data nama lengkap dan nama role dari UserSession
-    String namaUser = tmasch.UserSession.getFullName();
-    int roleId = tmasch.UserSession.getRoleId();
-    String namaRole = switch (roleId) {
-            case 1 -> "Admin";
-            case 2 -> "Guru / Staff";
-            case 3 -> "Siswa";
-            default -> "User";
-        };
-        lblWelcome.setText("<html>Halo, <b>" + namaUser + "</b><br><small>" + namaRole + "</small></html>");
-}
+    private void tampilkanSambutanUser() {
+        // 1. Ambil data nama lengkap dan nama role dari UserSession
+        String namaUser = tmasch.UserSession.getFullName();
+        int roleId = tmasch.UserSession.getRoleId();
+        String namaRole = switch (roleId) {
+                case 1 -> "Admin";
+                case 2 -> "Guru / Staff";
+                case 3 -> "Siswa";
+                default -> "User";
+            };
+            lblWelcome.setText("<html>Halo, <b>" + namaUser + "</b><br><small>" + namaRole + "</small></html>");
+    }
+
+    /**
+    * Mengatur visibilitas tombol sidebar berdasarkan role user yang login.
+    * Role 1 = Admin   → semua menu tampil
+    * Role 2 = Guru    → Create & Manage Ticket (tanpa Laporan)
+    * Role 3 = Siswa   → hanya Create Ticket
+    */
+    private void aturMenuBerdasarkanRole() {
+       int roleId = tmasch.UserSession.getRoleId();
+
+       switch (roleId) {
+           case 1 -> { // Admin: akses penuh
+               btnCreateTickett.setVisible(true);
+               btnManageTicket.setVisible(true);
+               btnLaporan.setVisible(true);
+           }
+           case 2 -> { // Guru/Staff: tidak bisa lihat laporan
+               btnCreateTickett.setVisible(true);
+               btnManageTicket.setVisible(true);
+               btnLaporan.setVisible(false);
+           }
+           case 3 -> { // Siswa: hanya buat tiket
+               btnCreateTickett.setVisible(true);
+               btnManageTicket.setVisible(false);
+               btnLaporan.setVisible(false);
+           }
+           default -> { // Role tidak dikenal: sembunyikan semua kecuali create
+               btnCreateTickett.setVisible(true);
+               btnManageTicket.setVisible(false);
+               btnLaporan.setVisible(false);
+
+               // Opsional: tampilkan peringatan
+               javax.swing.JOptionPane.showMessageDialog(this,
+                   "Role tidak dikenali (ID: " + roleId + ").\nAkses dibatasi.",
+                   "Peringatan", javax.swing.JOptionPane.WARNING_MESSAGE);
+           }
+       }
+   }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -132,11 +172,24 @@ private void tampilkanSambutanUser() {
     }//GEN-LAST:event_btnCreateTickettActionPerformed
 
     private void btnManageTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnManageTicketActionPerformed
+        int roleId = tmasch.UserSession.getRoleId();
+        if (roleId != 1 && roleId != 2) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Anda tidak memiliki akses ke menu ini.",
+                "Akses Ditolak", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
         cl.show(panelKontenUtama, "kelola_tiket");
     }//GEN-LAST:event_btnManageTicketActionPerformed
 
     private void btnLaporanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLaporanActionPerformed
+        if (tmasch.UserSession.getRoleId() != 1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Anda tidak memiliki akses ke menu ini.",
+                "Akses Ditolak", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         java.awt.CardLayout cl = (java.awt.CardLayout) panelKontenUtama.getLayout();
         cl.show(panelKontenUtama, "laporan");
     }//GEN-LAST:event_btnLaporanActionPerformed
